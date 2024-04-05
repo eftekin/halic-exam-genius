@@ -78,23 +78,6 @@ def getClassroom(course_code):
     classroom = ",".join(str(element) for element in classroom)
     return classroom
 
-
-def createResult():
-    return 0
-
-
-print(df.head(30))
-print(en_getExamDate("psİ475"))
-print(getCourseName("psİ475"))
-print(getClassroom("MATH111"))
-
-
-result_df_tr = pd.DataFrame(
-    [],
-    columns=["Ders Adı", "Sınav Tarihi", ""],
-)
-
-
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
         [],
