@@ -1,6 +1,6 @@
 import streamlit as st
 
-from main import df, en_createResultDf, tr_createResultDf
+from utils import df, en_createResultDf, tr_createResultDf
 
 st.title("Exam Genius📚")
 
