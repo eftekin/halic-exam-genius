@@ -1,5 +1,5 @@
 import datetime
-import streamlit as st
+
 import pandas as pd
 import requests
 from unidecode import unidecode
@@ -77,6 +77,7 @@ def getClassroom(course_code):
     classroom = classroom.split(",")[:5]
     classroom = ",".join(str(element) for element in classroom)
     return classroom
+
 
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
