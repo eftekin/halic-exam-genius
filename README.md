@@ -8,22 +8,22 @@ Halic Exam Genius is a Python application developed for students of Halic Univer
 
 2. Clone the project:
    ```
-   git clone https://github.com/eftekin/halic_exam_genius.git
+   git clone https://github.com/eftekin/halic-exam-genius.git
    ```
 
 3. Navigate to the project directory and install the required libraries:
    ```
-   cd exam_compass
+   cd halic-exam-genius
    pip install -r requirements.txt
    ```
 
 4. Run the application:
    ```
-   streamlit run main.py
+   streamlit run app.py
    ```
 
 5. Access the application by visiting [localhost:8501](http://localhost:8501) in your browser.
 
 ## Support
 
-If you encounter any issues, please open an [issue](https://github.com/eftekin/halic_exam_genius/issues) or contact me via email.
+If you encounter any issues, please open an [issue](https://github.com/eftekin/halic-exam-genius/issues) or contact me via email.
