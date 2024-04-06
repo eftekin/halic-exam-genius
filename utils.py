@@ -4,37 +4,58 @@ import pandas as pd
 import requests
 from unidecode import unidecode
 
-url = "https://halic.edu.tr/tr/s-duyurular/Documents/2023/11/14/2023-2024-guz-donemi-vize-sinavi-all-list.xlsx"
+url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/01/02/2023-2024-guz-donemi-final-sinav-programi-all-list.xlsx"
 midterm_xls = requests.get(url)
 
 df = pd.read_excel(midterm_xls.content)
 
-df["DERS KODU"] = df["DERS KODU"].apply(lambda x: x.split(";")[0])
-df["DERS ADI"] = df["DERS ADI"].apply(lambda x: x.split(";")[0])
-df["DERSLİK KODLARI"] = df["DERSLİK KODLARI"].apply(lambda x: str(x))
-df["DERSLİK KODLARI"] = df["DERSLİK KODLARI"].apply(lambda x: x.replace(";", ","))
-df["DERS KODU"] = df["DERS KODU"].apply(lambda y: unidecode(y).lower())
+exam_date_column = "SINAV GÜNÜ"
+exam_time_column = "BAŞLANGIÇ SAATİ"
+course_code_column = "DERS KODU"
+course_name_column = "DERS ADI"
+classroom_code_column = "DERSLİK KODLARI"
+
+
+df[course_code_column] = df[course_code_column].apply(lambda x: x.split(";")[0])
+df[course_name_column] = df[course_name_column].apply(lambda x: x.split(";")[0])
+df[classroom_code_column] = df[classroom_code_column].apply(lambda x: str(x))
+df[classroom_code_column] = df[classroom_code_column].apply(
+    lambda x: x.replace(";", ",")
+)
+df[course_code_column] = df[course_code_column].apply(lambda y: unidecode(y).lower())
 
 df = df[
-    ["SINAV GÜNÜ", "SINAV BAŞLANGIÇ SAATİ", "DERS KODU", "DERS ADI", "DERSLİK KODLARI"]
+    [
+        exam_date_column,
+        exam_time_column,
+        course_code_column,
+        course_name_column,
+        classroom_code_column,
+    ]
 ]
 
 df = (
-    df.groupby("DERS KODU")
+    df.groupby(course_code_column)
     .agg(
         {
-            "SINAV GÜNÜ": "first",
-            "SINAV BAŞLANGIÇ SAATİ": "first",
-            "DERS ADI": "first",
-            "DERSLİK KODLARI": ", ".join,
+            exam_date_column: "first",
+            exam_time_column: "first",
+            course_name_column: "first",
+            classroom_code_column: ", ".join,
         }
     )
     .reset_index()
 )
 
 df = df[
-    ["SINAV GÜNÜ", "SINAV BAŞLANGIÇ SAATİ", "DERS KODU", "DERS ADI", "DERSLİK KODLARI"]
-].sort_values(by="SINAV GÜNÜ")
+    [
+        exam_date_column,
+        exam_time_column,
+        course_code_column,
+        course_name_column,
+        classroom_code_column,
+    ]
+].sort_values(by=exam_date_column)
 
 course_list = []
 
@@ -42,38 +63,40 @@ course_list = []
 def tr_getExamDate(course_code):
     course_code = unidecode(course_code).lower()
 
-    date = df[df["DERS KODU"] == course_code]["SINAV GÜNÜ"].values[0]
+    date = df[df[course_code_column] == course_code][exam_date_column].values[0]
     week_day = date.split(" ")[1]
     date_full = datetime.datetime.strptime(date.split(" ")[0], "%Y-%m-%d").strftime(
         "%d/%m/%Y"
     )
     date = date_full + " " + week_day
-    time = df[df["DERS KODU"] == course_code]["SINAV BAŞLANGIÇ SAATİ"].values[0]
-    return date + " " + time
+    time = df[df[course_code_column] == course_code][exam_time_column].values[0]
+    return str(date) + " " + str(time)
 
 
 def en_getExamDate(course_code):
     course_code = unidecode(course_code).lower()
 
-    date = df[df["DERS KODU"] == course_code]["SINAV GÜNÜ"].values[0]
+    date = df[df[course_code_column] == course_code][exam_date_column].values[0]
     date_en = datetime.datetime.strptime(date.split(" ")[0], "%Y-%m-%d").strftime(
         "%d/%m/%Y %A"
     )
     date = date_en
 
-    time = df[df["DERS KODU"] == course_code]["SINAV BAŞLANGIÇ SAATİ"].values[0]
+    time = df[df[course_code_column] == course_code][exam_time_column].values[0]
     return date + " " + time
 
 
 def getCourseName(course_code):
     course_code = unidecode(course_code).lower()
-    name = df[df["DERS KODU"] == course_code]["DERS ADI"].values[0]
+    name = df[df[course_code_column] == course_code][course_name_column].values[0]
     return name
 
 
 def getClassroom(course_code):
     course_code = unidecode(course_code).lower()
-    classroom = df[df["DERS KODU"] == course_code]["DERSLİK KODLARI"].values[0]
+    classroom = df[df[course_code_column] == course_code][classroom_code_column].values[
+        0
+    ]
     classroom = classroom.split(",")[:5]
     classroom = ",".join(str(element) for element in classroom)
     return classroom
