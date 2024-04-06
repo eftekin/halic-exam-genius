@@ -3,3 +3,4 @@ datetime
 requests
 unidecode
 streamlit
+openpyxl
