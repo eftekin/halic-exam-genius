@@ -1,4 +1,3 @@
-import pandas as pd
 import streamlit as st
 
 from main import df, en_createResultDf, tr_createResultDf
