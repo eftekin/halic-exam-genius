@@ -1,0 +1,5 @@
+pandas
+datetime
+requests
+unidecode
+streamlit
