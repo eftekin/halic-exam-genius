@@ -19,7 +19,7 @@ if language_on:
     if len(course_list) > 0 and col1.button("Show Exam Dates"):
         result_df = en_createResultDf(course_list)
         st.dataframe(result_df, hide_index=True)
-        col2.download_button("Download Calendar", "main.py")
+        # col2.download_button("Download Calendar", "main.py")
 
 else:
     st.write("### 2023 Güz Dönemi Final Sınav Tarihleri")
@@ -32,4 +32,4 @@ else:
     if len(course_list) > 0 and col1.button("Sınav Tarihlerini Göster"):
         result_df = tr_createResultDf(course_list)
         st.dataframe(result_df, hide_index=True)
-        col2.download_button("Takvimi İndir", "main.py")
+        # col2.download_button("Takvimi İndir", "main.py")
