@@ -1,6 +1,7 @@
 import datetime
 
 import pandas as pd
+import plotly.figure_factory as ff
 import requests
 from unidecode import unidecode
 
@@ -97,8 +98,9 @@ def getClassroom(course_code):
     classroom = df[df[course_code_column] == course_code][classroom_code_column].values[
         0
     ]
-    classroom = classroom.split(",")[:5]
-    classroom = ",".join(str(element) for element in classroom)
+    if len(classroom.split(",")) > 4:
+        classroom = classroom.split(",")[:4]
+        classroom = ",".join(str(element) for element in classroom) + "..."
     return classroom
 
 
@@ -124,3 +126,13 @@ def tr_createResultDf(course_list):
         result_df_tr.loc[len(result_df_tr)] = list_row
     result_df_tr = result_df_tr.sort_values("Sınav Tarihi")
     return result_df_tr
+
+
+def createImage(df):
+    fig = ff.create_table(df)
+    fig.layout.width = 900
+    # fig.update_layout(autosize=True)
+    fig.write_image("output/examgenius.png", scale=2)
+
+
+createImage(tr_createResultDf(["MATH111"]))
