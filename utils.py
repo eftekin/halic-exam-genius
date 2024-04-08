@@ -131,7 +131,7 @@ def tr_createResultDf(course_list):
 def createImage(df):
     fig = ff.create_table(df)
     fig.layout.width = 900
-    # fig.update_layout(autosize=True)
+    fig.update_layout(autosize=True)
     fig.write_image("output/examgenius.png", scale=2)
 
 
