@@ -5,3 +5,4 @@ unidecode
 streamlit
 openpyxl
 plotly
+kaleido
