@@ -133,6 +133,3 @@ def createImage(df):
     fig.layout.width = 900
     fig.update_layout(autosize=True)
     fig.write_image("output/examgenius.png", scale=2)
-
-
-createImage(tr_createResultDf(["MATH111"]))
