@@ -129,7 +129,13 @@ def tr_createResultDf(course_list):
 
 
 def createImage(df):
+    course_list = list(df.iloc[:, 0])
+    scale = 21
+    width = max([len(course_name) * scale for course_name in course_list])
     fig = ff.create_table(df)
-    fig.layout.width = 900
+    if width > 700:
+        fig.layout.width = width
+    else:
+        fig.layout.width = 700
     fig.update_layout(autosize=True)
     fig.write_image("output/examgenius.png", scale=2)
