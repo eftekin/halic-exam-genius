@@ -98,8 +98,8 @@ def getClassroom(course_code):
     classroom = df[df[course_code_column] == course_code][classroom_code_column].values[
         0
     ]
-    if len(classroom.split(",")) > 4:
-        classroom = classroom.split(",")[:4]
+    if len(classroom.split(",")) > 5:
+        classroom = classroom.split(",")[:5]
         classroom = ",".join(str(element) for element in classroom) + "..."
     return classroom
 
