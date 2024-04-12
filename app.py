@@ -14,7 +14,7 @@ if language_on:
     )
     course_list = st.multiselect(
         "Select Courses", df["DERS KODU"].str.upper(), placeholder="Course Code"
-    )  # Ders kodlarını büyük harfe dönüştür
+    )
     col1, col2 = st.columns(2)
     if len(course_list) > 0 and col1.button("Show Exam Dates"):
         result_df = en_createResultDf(course_list)
