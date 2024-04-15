@@ -14,6 +14,7 @@ exam_date_column = "SINAV GÜNÜ"
 exam_time_column = "BAŞLANGIÇ SAATİ"
 course_code_column = "DERS KODU"
 course_name_column = "DERS ADI"
+course_code_and_name_column = "DERS KODU VE ADI"
 classroom_code_column = "DERSLİK KODLARI"
 
 
@@ -58,46 +59,54 @@ df = df[
     ]
 ].sort_values(by=exam_date_column)
 
+df[course_code_and_name_column] = (
+    df[course_code_column].str.upper() + " (" + df[course_name_column] + ")"
+)
+
 course_list = []
 
 
 def tr_getExamDate(course_code):
-    course_code = unidecode(course_code).lower()
-
-    date = df[df[course_code_column] == course_code][exam_date_column].values[0]
+    date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
+        0
+    ]
     week_day = date.split(" ")[1]
     date_full = datetime.datetime.strptime(date.split(" ")[0], "%Y-%m-%d").strftime(
         "%d/%m/%Y"
     )
     date = date_full + " " + week_day
-    time = df[df[course_code_column] == course_code][exam_time_column].values[0]
+    time = df[df[course_code_and_name_column] == course_code][exam_time_column].values[
+        0
+    ]
     return str(date) + " " + str(time)
 
 
 def en_getExamDate(course_code):
-    course_code = unidecode(course_code).lower()
-
-    date = df[df[course_code_column] == course_code][exam_date_column].values[0]
+    date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
+        0
+    ]
     date_en = datetime.datetime.strptime(date.split(" ")[0], "%Y-%m-%d").strftime(
         "%d/%m/%Y %A"
     )
     date = date_en
 
-    time = df[df[course_code_column] == course_code][exam_time_column].values[0]
+    time = df[df[course_code_and_name_column] == course_code][exam_time_column].values[
+        0
+    ]
     return date + " " + time
 
 
 def getCourseName(course_code):
-    course_code = unidecode(course_code).lower()
-    name = df[df[course_code_column] == course_code][course_name_column].values[0]
+    name = df[df[course_code_and_name_column] == course_code][
+        course_name_column
+    ].values[0]
     return name
 
 
 def getClassroom(course_code):
-    course_code = unidecode(course_code).lower()
-    classroom = df[df[course_code_column] == course_code][classroom_code_column].values[
-        0
-    ]
+    classroom = df[df[course_code_and_name_column] == course_code][
+        classroom_code_column
+    ].values[0]
     if len(classroom.split(",")) > 5:
         classroom = classroom.split(",")[:5]
         classroom = ",".join(str(element) for element in classroom) + "..."

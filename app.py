@@ -14,7 +14,7 @@ if language_on:
     )
     course_list = st.multiselect(
         "Select Courses",
-        df["DERS KODU"].str.upper() + " (" + df["DERS ADI"] + ")",
+        df["DERS KODU VE ADI"],
         placeholder="Course Code or Name",
     )
     col1, col2 = st.columns(2)
@@ -36,7 +36,7 @@ else:
     st.write("Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin.")
     course_list = st.multiselect(
         "Dersleri Seçin",
-        df["DERS KODU"].str.upper() + " (" + df["DERS ADI"] + ")",
+        df["DERS KODU VE ADI"],
         placeholder="Ders Kodu veya Adı",
     )
     col1, col2 = st.columns(2)
