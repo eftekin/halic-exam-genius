@@ -142,9 +142,9 @@ def createImage(df):
     scale = 21
     width = max([len(course_name) * scale for course_name in course_list])
     fig = ff.create_table(df)
-    if width > 700:
+    if width > 800:
         fig.layout.width = width
     else:
-        fig.layout.width = 700
+        fig.layout.width = 800
     fig.update_layout(autosize=True)
     fig.write_image("output/examgenius.png", scale=2)
