@@ -2,13 +2,15 @@ import datetime
 
 import pandas as pd
 import plotly.figure_factory as ff
-import requests
 from unidecode import unidecode
 
-url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/01/02/2023-2024-guz-donemi-final-sinav-programi-all-list.xlsx"
-midterm_xls = requests.get(url)
+# import requests
+# url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/01/02/2023-2024-guz-donemi-final-sinav-programi-all-list.xlsx"
+# midterm_xls = requests.get(url)
 
-df = pd.read_excel(midterm_xls.content)
+# df = pd.read_excel(midterm_xls.content)
+
+df = pd.read_excel("2024_spring_midterm_all_list.xlsx")
 
 exam_date_column = "SINAV GÜNÜ"
 exam_time_column = "BAŞLANGIÇ SAATİ"
