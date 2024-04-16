@@ -14,6 +14,12 @@ df = pd.read_excel("2024_spring_midterm_all_list.xlsx")
 
 exam_date_column = "SINAV GÜNÜ"
 exam_time_column = "BAŞLANGIÇ SAATİ"
+# BİTİŞ SAATİ EKLE
+# FAKÜLTE ADI EKLE
+# PROGRAM ADI EKLE
+# ŞUBE EKLE VE ŞUBEYE GÖRE FARKLI SINIFLAR (DERSLİK KODLARI) VAR, ONA GÖRE DISPLAY ET HER ŞUBEYİ KENDİ DERSLİK KODUNA GÖRE !!!
+# ÖĞRETİM ELEMANI ADI EKLE
+# SINAV SÜRESİ EKLE
 course_code_column = "DERS KODU"
 course_name_column = "DERS ADI"
 course_code_and_name_column = "DERS KODU VE ADI"
