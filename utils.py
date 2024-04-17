@@ -67,7 +67,7 @@ df = (
             exam_time_end_column: "first",
             program_name: "first",
             branch: " - ".join,
-            teacher_name: "- ".join,
+            teacher_name: " -".join,
             course_name_column: "first",
             classroom_code_column: "- ".join,
         }
@@ -164,8 +164,34 @@ def getBranchName(course_code):
 
 def getTeacherName(course_code):
     teacherName = df[df[course_code_and_name_column] == course_code][teacher_name].values[0]
-    # Repeating teacher names should be removed like in getBranchName()
-    return teacherName
+    lst = []
+    i = 0
+    while i < len(teacherName):
+        if teacherName[i] != "-":
+            num = ''
+            while i < len(teacherName) and teacherName[i] != '-':
+                num += teacherName[i]
+                i += 1
+            lst.append(str(num))
+        else:
+            lst.append("-")
+            i += 1
+    tmpList = []
+    for x in lst:
+        if x == "-":
+            tmpList.append(" - ")
+            continue
+        find = x.find(",") # Do Find only if there are more than 1 teacher!
+        if find < 0:
+            tmpList.append(x)
+            break
+        elif x[:find] not in tmpList:
+            tmpList.append(x[:find])
+        else:
+            break
+    if str(tmpList[-1]).endswith("-") or str(tmpList[-1]).endswith("- "):
+        tmpList.pop()
+    return ''.join(map(str, tmpList))
 
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
@@ -182,10 +208,10 @@ def en_createResultDf(course_list):
 def tr_createResultDf(course_list):
     result_df_tr = pd.DataFrame(
         [],
-        columns=["Ders Adı", "Sınav Tarihi", "Sınıf", "Şube", "Bölüm", "Öğretim Elemanı"],
+        columns=["Ders Adı", "Sınav Tarihi", "Sınıf", "Şube", "Öğretim Elemanı"], # , "Bölüm"
     )
     for course in course_list:
-        list_row = [getCourseName(course), tr_getExamDate(course), getClassroom(course), getBranchName(course), getProgramName(course), getTeacherName(course)]
+        list_row = [getCourseName(course), tr_getExamDate(course), getClassroom(course), getBranchName(course), getTeacherName(course)] # , getProgramName(course)
         result_df_tr.loc[len(result_df_tr)] = list_row
     result_df_tr = result_df_tr.sort_values("Sınav Tarihi")
     return result_df_tr
