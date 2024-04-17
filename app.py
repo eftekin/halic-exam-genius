@@ -29,6 +29,7 @@ if language_on:
                 file_name="examgenius.png",
                 mime="image/png",
             )
+    st.caption("For feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌")
 
 else:
     st.write("### 2024 Bahar Dönemi Ara Sınav Tarihleri")
@@ -51,3 +52,6 @@ else:
                 file_name="examgenius.png",
                 mime="image/png",
             )
+    st.caption(
+        "Geri bildirimleriniz için: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌"
+    )
