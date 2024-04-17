@@ -114,9 +114,9 @@ def en_getExamDate(course_code):
         "%d/%m/%Y %A"
     )
     date = date_en
-
     time = df[df[course_code_and_name_column] == course_code][exam_time_column].values[0]
-    return date + " " + time
+    time2 = df[df[course_code_and_name_column] == course_code][exam_time_end_column].values[0]
+    return date + " " + time + "-" + time2
 
 
 def getCourseName(course_code):
@@ -170,10 +170,10 @@ def getTeacherName(course_code):
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
         [],
-        columns=["Course Name", "Exam Date", "Classroom Codes"],
+        columns=["Course Name", "Exam Date", "Classroom Codes", "Branch", "Program", "Teacher"],
     )
     for course in course_list:
-        list_row = [getCourseName(course), en_getExamDate(course), getClassroom(course)]
+        list_row = [getCourseName(course), en_getExamDate(course), getClassroom(course), getBranchName(course), getProgramName(course), getTeacherName(course)]
         result_df_en.loc[len(result_df_en)] = list_row
     result_df_en = result_df_en.sort_values("Exam Date")
     return result_df_en
@@ -194,6 +194,7 @@ def tr_createResultDf(course_list):
 def createImage(df):
     course_list = list(df.iloc[:, 0])
     scale = 21
+    # The width of the table will be extended
     width = max([len(course_name) * scale for course_name in course_list])
     fig = ff.create_table(df)
     if width > 800:
