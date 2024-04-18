@@ -196,10 +196,10 @@ def getTeacherName(course_code):
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
         [],
-        columns=["Course Name", "Exam Date", "Classroom Codes", "Branch", "Program", "Teacher"],
+        columns=["Course Name", "Exam Date", "Classroom Codes", "Branch", "Teacher"], # , "Program"
     )
     for course in course_list:
-        list_row = [getCourseName(course), en_getExamDate(course), getClassroom(course), getBranchName(course), getProgramName(course), getTeacherName(course)]
+        list_row = [getCourseName(course), en_getExamDate(course), getClassroom(course), getBranchName(course), getTeacherName(course)] # , getProgramName(course),
         result_df_en.loc[len(result_df_en)] = list_row
     result_df_en = result_df_en.sort_values("Exam Date")
     return result_df_en
