@@ -1,8 +1,11 @@
+# Import the necessary libraries
 import datetime
 
 import pandas as pd
 import plotly.figure_factory as ff
 from unidecode import unidecode
+
+# Read the Excel file into a DataFrame
 
 # import requests
 # url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/01/02/2023-2024-guz-donemi-final-sinav-programi-all-list.xlsx"
@@ -12,6 +15,7 @@ from unidecode import unidecode
 
 df = pd.read_excel("2024_spring_midterm_all_list.xlsx")
 
+# Define column names for clarity
 exam_date_column = "SINAV GÜNÜ"
 exam_time_column = "BAŞLANGIÇ SAATİ"
 course_code_column = "DERS KODU"
@@ -19,7 +23,7 @@ course_name_column = "DERS ADI"
 course_code_and_name_column = "DERS KODU VE ADI"
 classroom_code_column = "DERSLİK KODLARI"
 
-
+# Clean up the data in the DataFrame
 df[course_code_column] = df[course_code_column].apply(lambda x: x.split(";")[0])
 df[course_name_column] = df[course_name_column].apply(lambda x: x.split(";")[0])
 df[classroom_code_column] = df[classroom_code_column].apply(lambda x: str(x))
@@ -28,6 +32,7 @@ df[classroom_code_column] = df[classroom_code_column].apply(
 )
 df[course_code_column] = df[course_code_column].apply(lambda y: unidecode(y).lower())
 
+# Select relevant columns and group the data
 df = df[
     [
         exam_date_column,
@@ -61,6 +66,7 @@ df = df[
     ]
 ].sort_values(by=exam_date_column)
 
+# Add a column for course code and name
 df[course_code_and_name_column] = (
     df[course_code_column].str.upper() + " (" + df[course_name_column] + ")"
 )
@@ -68,6 +74,7 @@ df[course_code_and_name_column] = (
 course_list = []
 
 
+# Retrieve and format the exam date and time in Turkish
 def tr_getExamDate(course_code):
     date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
         0
@@ -83,6 +90,7 @@ def tr_getExamDate(course_code):
     return str(date) + " " + str(time)
 
 
+# Retrieve and format the exam date and time in English
 def en_getExamDate(course_code):
     date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
         0
@@ -98,6 +106,7 @@ def en_getExamDate(course_code):
     return date + " " + time
 
 
+# Retrieve the course name
 def getCourseName(course_code):
     name = df[df[course_code_and_name_column] == course_code][
         course_name_column
@@ -105,6 +114,7 @@ def getCourseName(course_code):
     return name
 
 
+# Retrieve and format the classroom information
 def getClassroom(course_code):
     classroom = df[df[course_code_and_name_column] == course_code][
         classroom_code_column
@@ -115,6 +125,7 @@ def getClassroom(course_code):
     return classroom
 
 
+# Create a DataFrame in English
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame(
         [],
@@ -127,6 +138,7 @@ def en_createResultDf(course_list):
     return result_df_en
 
 
+# Create a DataFrame in Turkish
 def tr_createResultDf(course_list):
     result_df_tr = pd.DataFrame(
         [],
@@ -139,6 +151,7 @@ def tr_createResultDf(course_list):
     return result_df_tr
 
 
+# Create an image of the result DataFrame
 def createImage(df):
     course_list = list(df.iloc[:, 0])
     scale = 21
