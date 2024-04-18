@@ -181,11 +181,11 @@ def getTeacherName(course_code):
         if x == "-":
             tmpList.append(" - ")
             continue
-        find = x.find(",") # Do Find only if there are more than 1 teacher!
-        if find < 0:
+        find = x.find(",") 
+        if find < 0:    # Find only if there are more than 1 teacher!
             tmpList.append(x)
             break
-        elif x[:find] not in tmpList:
+        elif x[:find] not in tmpList: 
             tmpList.append(x[:find])
         else:
             break
