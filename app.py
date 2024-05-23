@@ -2,6 +2,8 @@ import streamlit as st
 
 from utils import createImage, df, en_createResultDf, tr_createResultDf
 
+last_update = "20.04.2023 12:00"
+
 st.title("Exam Genius📚")
 
 language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
@@ -29,7 +31,7 @@ if language_on:
                 file_name="examgenius.png",
                 mime="image/png",
             )
-    st.caption("Last Update 20.04.2023 12:00")
+    st.caption(f"Last Update {last_update}")
     st.caption("For feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌")
 
 else:
@@ -53,7 +55,7 @@ else:
                 file_name="examgenius.png",
                 mime="image/png",
             )
-    st.caption("Son Güncelleme 20.04.2023 12:00")
+    st.caption(f"Son Güncelleme {last_update}")
     st.caption(
         "Geri bildirimleriniz için: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌"
     )
