@@ -13,7 +13,7 @@ from unidecode import unidecode
 
 # df = pd.read_excel(midterm_xls.content)
 
-df = pd.read_excel("2024_spring_midterm_all_list.xlsx")
+df = pd.read_excel("2023-2024-bahar-donemi-final-sinavlari-tum-liste.xlsx")
 
 # Define column names for clarity
 exam_date_column = "SINAV GÜNÜ"
