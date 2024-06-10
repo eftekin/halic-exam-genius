@@ -2,15 +2,15 @@ import streamlit as st
 
 from utils import createImage, df, en_createResultDf, tr_createResultDf
 
-last_update = "20.04.2023 12:00"
+last_update = "10.06.2024 17:55"
 
 st.title("Exam Genius📚")
 
 language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
 if language_on:
-    st.write("### 2024 Spring Semester Midterm Exam Dates")
-    st.write("Below are the midterm exam dates for the 2024 Spring semester.")
+    st.write("### 2024 Spring Semester Final Exam Dates")
+    st.write("Below are the final exam dates for the 2024 Spring semester.")
     st.write(
         "Please select the course codes of the courses for which you want to see the exam dates."
     )
@@ -35,8 +35,8 @@ if language_on:
     st.caption("For feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌")
 
 else:
-    st.write("### 2024 Bahar Dönemi Ara Sınav Tarihleri")
-    st.write("Aşağıda 2024 Bahar dönemi için ara sınav tarihleri yer almaktadır.")
+    st.write("### 2024 Bahar Dönemi Final Sınav Tarihleri")
+    st.write("Aşağıda 2024 Bahar dönemi için final sınav tarihleri yer almaktadır.")
     st.write("Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin.")
     course_list = st.multiselect(
         "Dersleri Seçin",
