@@ -2,7 +2,7 @@ import streamlit as st
 
 from utils import createImage, df, en_createResultDf, tr_createResultDf
 
-last_update = "10.06.2024 17:55"
+last_update = "29.06.2024 21:03"
 
 st.title("Exam Genius📚")
 
