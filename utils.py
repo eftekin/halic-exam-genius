@@ -15,19 +15,14 @@ def format_date(date_str):
         try:
             date_obj = datetime.datetime.strptime(date_str.split(" ")[0], "%d.%m.%Y")
         except ValueError:
-            try:
-                date_obj = datetime.datetime.strptime(
-                    date_str.split(" ")[0], "%d.%m.%Y"
-                )
-            except ValueError:
-                return "Invalid date format"
+            return "Invalid date format"
 
     formatted_date = date_obj.strftime("%d/%m/%Y")
     return formatted_date
 
 
 # Read the Excel file into a DataFrame
-url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/07/10/2023-2024-bahar-donemi-butunleme-sinavi-tum-liste.xlsx"
+url = "https://halic.edu.tr/tr/s-duyurular/Documents/2024/06/10/2023-2024-bahar-donemi-final-sinavlari-tum-liste.xlsx"
 midterm_xls = requests.get(url)
 
 df = pd.read_excel(midterm_xls.content)
@@ -105,10 +100,7 @@ def tr_getExamDate(course_code):
         try:
             time_obj = datetime.datetime.strptime(time, "%H:%M:%S").time()
         except ValueError:
-            try:
-                time_obj = datetime.datetime.strptime(time, "%H.%M").time()
-            except ValueError:
-                time_obj = datetime.datetime.strptime(time, "%H:%M").time()
+            time_obj = datetime.datetime.strptime(time, "%H:%M").time()
     else:
         time_obj = time
     time_str = time_obj.strftime("%H:%M")
@@ -133,10 +125,7 @@ def en_getExamDate(course_code):
         try:
             time_obj = datetime.datetime.strptime(time, "%H:%M:%S").time()
         except ValueError:
-            try:
-                time_obj = datetime.datetime.strptime(time, "%H.%M").time()
-            except ValueError:
-                time_obj = datetime.datetime.strptime(time, "%H:%M").time()
+            time_obj = datetime.datetime.strptime(time, "%H:%M").time()
     else:
         time_obj = time
     time_str = time_obj.strftime("%H:%M")
