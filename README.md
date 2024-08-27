@@ -2,7 +2,7 @@
 
 Halic Exam Genius is a Python application developed for students of Halic University. This application reads Excel files shared on the school announcement page to provide students with easier access to the dates and classroom information of midterm and final exams.
 
-## How to Use
+## How to Contribute
 
 1. Make sure you have Python installed. If not, you can download it from the [official Python website](https://www.python.org/).
 
