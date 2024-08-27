@@ -5,7 +5,12 @@ Halic Exam Genius is a Python application developed for students of Halic Univer
 ## Features
 
 - Exam Dates Access: View and download dates and classroom information for midterm and final exams.
+
+![exam_date_gif](https://github.com/user-attachments/assets/b895b1fb-2372-48ab-b03e-7026eabecf4e)
+
 - Grade Calculation: Calculate your overall grade based on individual exam grades and weights. Set a passing grade and determine if you've passed.
+
+![grade_calc_gif](https://github.com/user-attachments/assets/48a3e52d-7fb9-4937-862e-235715d4f437)
 
 ## How to Contribute
 
