@@ -41,8 +41,6 @@ with st.sidebar:
     with st.expander("Nasıl Kullanılır" if not language_on else "How To Use"):
         if language_on:
             st.write("""
-            **How to Use:**
-            
             1. **Add Exams**: Click on "Add Exam" to add new exams to your list. You can add as many exams as you need.
             2. **Enter Grades and Weights**: For each exam, enter the grade and its weight. Ensure that the total weight adds up to 100%.
             3. **Set Passing Grade**: Enter the minimum passing grade required.
@@ -51,8 +49,6 @@ with st.sidebar:
             """)
         else:
             st.write("""
-            **Nasıl Kullanılır:**
-            
             1. **Sınav Ekleyin**: Yeni sınavlar eklemek için "Sınav Ekle" butonuna tıklayın. İhtiyacınıza göre istediğiniz kadar sınav ekleyebilirsiniz.
             2. **Not ve Yüzde Girin**: Her sınav için notu ve yüzdesini girin. Toplam yüzdelik değerinin 100% olduğunu kontrol edin.
             3. **Geçme Notunu Ayarlayın**: Gereken minimum geçme notunu girin.
