@@ -38,7 +38,7 @@ with st.sidebar:
     st.header("Not Hesaplama" if not language_on else "Grade Calculation")
 
     # Expander içindeki "Nasıl Kullanılır"
-    with st.expander("Nasıl Kullanılır" if not language_on else "How To Use"):
+    with st.expander("Nasıl Kullanılır?" if not language_on else "How To Use?"):
         if language_on:
             st.write("""
             1. **Add Exams**: Click on "Add Exam" to add new exams to your list. You can add as many exams as you need.
