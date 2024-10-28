@@ -130,7 +130,7 @@ with st.sidebar:
 
 # Exam dates section
 if language_on:
-    st.write("### 2024 Fall Semester Final Exam Dates")
+    st.write("### 2024 Fall Semester Midterm Exam Dates")
     st.write("Below are the midterm exam dates for the 2024 Fall semester.")
     st.write(
         "Please select the course codes of the courses for which you want to see the exam dates."
