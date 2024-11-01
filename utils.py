@@ -16,6 +16,7 @@ def format_date(date_str):
             date_obj = datetime.datetime.strptime(date_str.split(" ")[0], "%d.%m.%Y")
         except ValueError:
             return "Invalid date format"
+
     formatted_date = date_obj.strftime("%d/%m/%Y")
     return formatted_date
 
@@ -31,10 +32,15 @@ exam_time_column = "BAŞLANGIÇ SAATİ"
 course_code_column = "DERS KODU"
 course_name_column = "DERS ADI"
 course_code_and_name_column = "DERS KODU VE ADI"
+classroom_code_column = "DERSLİK/ODA KODLARI"
 
 # Clean up the data in the DataFrame
 df[course_code_column] = df[course_code_column].apply(lambda x: x.split(";")[0])
 df[course_name_column] = df[course_name_column].apply(lambda x: x.split(";")[0])
+df[classroom_code_column] = df[classroom_code_column].apply(lambda x: str(x))
+df[classroom_code_column] = df[classroom_code_column].apply(
+    lambda x: x.replace(";", ",")
+)
 df[course_code_column] = df[course_code_column].apply(lambda y: unidecode(y).lower())
 
 # Select relevant columns and group the data
@@ -44,6 +50,7 @@ df = df[
         exam_time_column,
         course_code_column,
         course_name_column,
+        classroom_code_column,
     ]
 ]
 
@@ -54,6 +61,7 @@ df = (
             exam_date_column: "first",
             exam_time_column: "first",
             course_name_column: "first",
+            classroom_code_column: ", ".join,
         }
     )
     .reset_index()
@@ -65,6 +73,7 @@ df = df[
         exam_time_column,
         course_code_column,
         course_name_column,
+        classroom_code_column,
     ]
 ].sort_values(by=exam_date_column)
 
@@ -131,11 +140,24 @@ def getCourseName(course_code):
     return name
 
 
+# Retrieve and format the classroom information
+def getClassroom(course_code):
+    classroom = df[df[course_code_and_name_column] == course_code][
+        classroom_code_column
+    ].values[0]
+    if len(classroom.split(",")) > 5:
+        classroom = classroom.split(",")[:5]
+        classroom = ",".join(str(element) for element in classroom) + "..."
+    return classroom
+
+
 # Create a DataFrame in English
 def en_createResultDf(course_list):
-    result_df_en = pd.DataFrame([], columns=["Course Name", "Exam Date"])
+    result_df_en = pd.DataFrame(
+        [], columns=["Course Name", "Exam Date", "Classroom Codes"]
+    )
     for course in course_list:
-        list_row = [getCourseName(course), en_getExamDate(course)]
+        list_row = [getCourseName(course), en_getExamDate(course), getClassroom(course)]
         result_df_en.loc[len(result_df_en)] = list_row
     result_df_en = result_df_en.sort_values("Exam Date")
     return result_df_en
@@ -143,9 +165,9 @@ def en_createResultDf(course_list):
 
 # Create a DataFrame in Turkish
 def tr_createResultDf(course_list):
-    result_df_tr = pd.DataFrame([], columns=["Ders Adı", "Sınav Tarihi"])
+    result_df_tr = pd.DataFrame([], columns=["Ders Adı", "Sınav Tarihi", "Sınıf"])
     for course in course_list:
-        list_row = [getCourseName(course), tr_getExamDate(course)]
+        list_row = [getCourseName(course), tr_getExamDate(course), getClassroom(course)]
         result_df_tr.loc[len(result_df_tr)] = list_row
     result_df_tr = result_df_tr.sort_values("Sınav Tarihi")
     return result_df_tr
