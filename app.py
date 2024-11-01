@@ -25,7 +25,7 @@ def create_grade_section(label, idx):
     return grade, weight
 
 
-last_update = "28.10.2024 14:00"
+last_update = "01.11.2024 13:00"
 
 # App title
 st.title("Exam Genius📚")
