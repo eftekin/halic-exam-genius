@@ -25,7 +25,7 @@ def create_grade_section(label, idx):
     return grade, weight
 
 
-last_update = "01.11.2024 13:00"
+last_update = "17.12.2024 17:05"
 
 # App title
 st.title("Exam Genius📚")
@@ -130,8 +130,8 @@ with st.sidebar:
 
 # Exam dates section
 if language_on:
-    st.write("### 2024 Fall Semester Midterm Exam Dates")
-    st.write("Below are the midterm exam dates for the 2024 Fall semester.")
+    st.write("### 2024 Fall Semester Final Exam Dates")
+    st.write("Below are the final exam dates for the 2024 Fall semester.")
     st.write(
         "Please select the course codes of the courses for which you want to see the exam dates."
     )
@@ -156,8 +156,8 @@ if language_on:
     st.caption("For feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌")
 
 else:
-    st.write("### 2024 Güz Dönemi Ara Sınav Tarihleri")
-    st.write("Aşağıda 2024 Güz dönemi için ara sınav tarihleri yer almaktadır.")
+    st.write("### 2024 Güz Dönemi Final Sınav Tarihleri")
+    st.write("Aşağıda 2024 Güz dönemi için final sınav tarihleri yer almaktadır.")
     st.write("Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin.")
     course_list = st.multiselect(
         "Dersleri Seçin",
