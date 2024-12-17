@@ -131,23 +131,41 @@ def getCourseName(course_code):
     return name
 
 
-# Create a DataFrame in English
 def en_createResultDf(course_list):
     result_df_en = pd.DataFrame([], columns=["Course Name", "Exam Date"])
     for course in course_list:
         list_row = [getCourseName(course), en_getExamDate(course)]
         result_df_en.loc[len(result_df_en)] = list_row
-    result_df_en = result_df_en.sort_values("Exam Date")
+
+    # Sort as date
+    def parse_date(date_str):
+        date_parts = date_str.split()
+        parsed_date = datetime.datetime.strptime(
+            date_parts[0] + " " + date_parts[2], "%d/%m/%Y %H:%M"
+        )
+        return parsed_date
+
+    result_df_en["Parsed Date"] = result_df_en["Exam Date"].apply(parse_date)
+    result_df_en = result_df_en.sort_values("Parsed Date").drop("Parsed Date", axis=1)
     return result_df_en
 
 
-# Create a DataFrame in Turkish
 def tr_createResultDf(course_list):
     result_df_tr = pd.DataFrame([], columns=["Ders Adı", "Sınav Tarihi"])
     for course in course_list:
         list_row = [getCourseName(course), tr_getExamDate(course)]
         result_df_tr.loc[len(result_df_tr)] = list_row
-    result_df_tr = result_df_tr.sort_values("Sınav Tarihi")
+
+    # sort as date
+    def parse_date(date_str):
+        date_parts = date_str.split()
+        parsed_date = datetime.datetime.strptime(
+            date_parts[0] + " " + date_parts[2], "%d/%m/%Y %H:%M"
+        )
+        return parsed_date
+
+    result_df_tr["Parsed Date"] = result_df_tr["Sınav Tarihi"].apply(parse_date)
+    result_df_tr = result_df_tr.sort_values("Parsed Date").drop("Parsed Date", axis=1)
     return result_df_tr
 
 
