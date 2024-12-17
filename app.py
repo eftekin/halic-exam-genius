@@ -46,7 +46,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Last update timestamp
-    last_update = "17.12.2024 17:05"
+    last_update = "17.12.2024 20:56"
 
     # App title
     st.title("Exam Genius📚")
