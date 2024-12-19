@@ -2,3 +2,5 @@
 __pycache__/main.cpython-312.pyc
 __pycache__/utils.cpython-312.pyc
 *.png
+.vscode/settings.json
+__pycache__/utils.cpython-313.pyc
