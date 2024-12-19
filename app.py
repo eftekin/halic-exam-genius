@@ -1,7 +1,9 @@
 import streamlit as st
 
-# Import functions from utils module
 from utils import create_result_dataframe, createImage, df
+
+# Configure page settings - must be first Streamlit command
+st.set_page_config(page_title="Exam Genius", page_icon="📚")
 
 
 def create_grade_section(label, idx, language_on):
@@ -45,16 +47,12 @@ def main():
     Main Streamlit application for Exam Genius.
     Handles grade calculation and exam date display.
     """
-    # Last update timestamp
+    # Application configuration
     last_update = "17.12.2024 20:56"
-
-    # App title
     st.title("Exam Genius📚")
-
-    # Language toggle
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
-    # Sidebar section for adding/removing exams
+    # Sidebar: Grade Calculator Section
     with st.sidebar:
         st.header("Not Hesaplama" if not language_on else "Grade Calculation")
 
@@ -148,7 +146,7 @@ def main():
                             else f"Unfortunately, you did not pass the course. Your grade is {total}. 🥺"
                         )
 
-    # Exam dates section
+    # Main Content: Exam Dates Section
     st.write(
         "### 2024 Güz Dönemi Final Sınav Tarihleri"
         if not language_on
@@ -177,7 +175,7 @@ def main():
         "Sınav Tarihlerini Göster" if not language_on else "Show Exam Dates"
     ):
         result_df = create_result_dataframe(
-            df, course_list, "tr" if not language_on else "en"
+            df, course_list, "tr" if not language_on else "en", include_classroom=False
         )
         st.dataframe(result_df, hide_index=True)
         createImage(result_df)
@@ -190,7 +188,7 @@ def main():
                 mime="image/png",
             )
 
-    # Update and feedback captions
+    # Footer: Update info and feedback
     st.caption(
         f"Son Güncelleme {last_update}"
         if not language_on

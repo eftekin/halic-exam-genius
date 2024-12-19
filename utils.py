@@ -52,6 +52,7 @@ def process_exam_data():
     course_code_column = "DERS KODU"
     course_name_column = "DERS ADI"
     course_code_and_name_column = "DERS KODU VE ADI"
+    classroom_code_column = "DERSLİK/ODA KODLARI"  # Add classroom column
 
     # Read Excel file into DataFrame
     df = pd.read_excel(midterm_xls.content)
@@ -63,23 +64,34 @@ def process_exam_data():
         lambda y: unidecode(y).lower()
     )
 
+    # Clean classroom data if it exists
+    if classroom_code_column in df.columns:
+        df[classroom_code_column] = df[classroom_code_column].apply(lambda x: str(x))
+        df[classroom_code_column] = df[classroom_code_column].apply(
+            lambda x: x.replace(";", ",")
+        )
+
     # Select and group relevant columns
-    df = df[
-        [exam_date_column, exam_time_column, course_code_column, course_name_column]
+    columns_to_use = [
+        exam_date_column,
+        exam_time_column,
+        course_code_column,
+        course_name_column,
     ]
+    if classroom_code_column in df.columns:
+        columns_to_use.append(classroom_code_column)
+    df = df[columns_to_use]
 
     # Group by course code, taking first occurrence of date, time, and name
-    df = (
-        df.groupby(course_code_column)
-        .agg(
-            {
-                exam_date_column: "first",
-                exam_time_column: "first",
-                course_name_column: "first",
-            }
-        )
-        .reset_index()
-    )
+    agg_dict = {
+        exam_date_column: "first",
+        exam_time_column: "first",
+        course_name_column: "first",
+    }
+    if classroom_code_column in df.columns:
+        agg_dict[classroom_code_column] = ", ".join
+
+    df = df.groupby(course_code_column).agg(agg_dict).reset_index()
 
     # Sort by exam date
     df = df.sort_values(by=exam_date_column)
@@ -196,7 +208,7 @@ def getCourseName(df, course_code):
     ].values[0]
 
 
-def create_result_dataframe(df, course_list, language="tr"):
+def create_result_dataframe(df, course_list, language="tr", include_classroom=False):
     """
     Create a result DataFrame with sorted exam dates.
 
@@ -204,20 +216,31 @@ def create_result_dataframe(df, course_list, language="tr"):
         df (pd.DataFrame): Exam schedule DataFrame
         course_list (list): List of selected courses
         language (str): Language of the result ('tr' or 'en')
+        include_classroom (bool): Whether to include classroom codes in the result
 
     Returns:
         pd.DataFrame: Sorted result DataFrame
     """
     if language == "tr":
-        result_df = pd.DataFrame([], columns=["Ders Adı", "Sınav Tarihi"])
+        columns = ["Ders Adı", "Sınav Tarihi"]
+        if include_classroom:
+            columns.append("Sınıf")
+        result_df = pd.DataFrame([], columns=columns)
         for course in course_list:
             list_row = [getCourseName(df, course), tr_getExamDate(df, course)]
+            if include_classroom:
+                list_row.append(getClassroom(df, course))
             result_df.loc[len(result_df)] = list_row
         column_name = "Sınav Tarihi"
     else:
-        result_df = pd.DataFrame([], columns=["Course Name", "Exam Date"])
+        columns = ["Course Name", "Exam Date"]
+        if include_classroom:
+            columns.append("Classroom Codes")
+        result_df = pd.DataFrame([], columns=columns)
         for course in course_list:
             list_row = [getCourseName(df, course), en_getExamDate(df, course)]
+            if include_classroom:
+                list_row.append(getClassroom(df, course))
             result_df.loc[len(result_df)] = list_row
         column_name = "Exam Date"
 
@@ -232,6 +255,32 @@ def create_result_dataframe(df, course_list, language="tr"):
     result_df = result_df.sort_values("Parsed Date").drop("Parsed Date", axis=1)
 
     return result_df
+
+
+def getClassroom(df, course_code):
+    """
+    Retrieve classroom information for a given course code.
+
+    Args:
+        df (pd.DataFrame): Exam schedule DataFrame
+        course_code (str): Course code and name
+
+    Returns:
+        str: Formatted classroom codes
+    """
+    course_code_and_name_column = "DERS KODU VE ADI"
+    classroom_code_column = "DERSLİK/ODA KODLARI"
+
+    if classroom_code_column not in df.columns:
+        return "N/A"
+
+    classroom = df[df[course_code_and_name_column] == course_code][
+        classroom_code_column
+    ].values[0]
+    if len(str(classroom).split(",")) > 5:
+        classroom = str(classroom).split(",")[:5]
+        classroom = ",".join(str(element) for element in classroom) + "..."
+    return classroom
 
 
 def createImage(df):
