@@ -48,7 +48,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "17.12.2024 20:56"
+    last_update = "20.12.2024 04:13"
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
@@ -188,17 +188,20 @@ def main():
                 mime="image/png",
             )
 
-    # Footer: Update info and feedback
-    st.caption(
-        f"Son Güncelleme {last_update}"
-        if not language_on
-        else f"Last Update {last_update}"
-    )
-    st.caption(
-        "Geri bildirimleriniz için: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌"
-        if not language_on
-        else "For feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) 💌"
-    )
+    # Footer: Update info and feedback side by side
+    footer_col1, footer_col2 = st.columns(2)
+    with footer_col1:
+        st.caption(
+            f"🕐 Son Güncelleme: {last_update}"
+            if not language_on
+            else f"🕐 Last Update: {last_update}"
+        )
+    with footer_col2:
+        st.caption(
+            "💌 Geri bildirim: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev)"
+            if not language_on
+            else "💌 Feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev)"
+        )
 
 
 if __name__ == "__main__":
