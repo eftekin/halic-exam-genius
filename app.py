@@ -60,7 +60,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "20.12.2024 04:13"
+    last_update = "24.12.2024 11:00"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
@@ -198,7 +198,7 @@ def main():
         "Sınav Tarihlerini Göster" if not language_on else "Show Exam Dates"
     ):
         result_df = create_result_dataframe(
-            df, course_list, "tr" if not language_on else "en", include_classroom=False
+            df, course_list, "tr" if not language_on else "en", include_classroom=True
         )
         st.dataframe(result_df, hide_index=True)
         createImage(result_df)
