@@ -124,7 +124,7 @@ def main():
                 label = "Final"
                 default_weight = 60
             else:
-                label = f"Diğer {i-1}" if not language_on else f"Other {i-1}"
+                label = f"Diğer {i - 1}" if not language_on else f"Other {i - 1}"
                 default_weight = 0
 
             grade, weight = create_grade_section(
@@ -171,14 +171,14 @@ def main():
 
     # Main Content: Exam Dates Section
     st.write(
-        "### 2024 Güz Dönemi Final Sınav Tarihleri"
+        "### 2024 Güz Dönemi Bütünleme Sınav Tarihleri"
         if not language_on
-        else "### 2024 Fall Semester Final Exam Dates"
+        else "### 2024 Fall Semester Make-up Exam Dates"
     )
     st.write(
-        "Aşağıda 2024 Güz dönemi için final sınav tarihleri yer almaktadır."
+        "Aşağıda 2024 Güz dönemi için bütünleme sınav tarihleri yer almaktadır."
         if not language_on
-        else "Below are the final exam dates for the 2024 Fall semester."
+        else "Below are the make-up exam dates for the 2024 Fall semester."
     )
     st.write(
         "Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin."
@@ -198,7 +198,7 @@ def main():
         "Sınav Tarihlerini Göster" if not language_on else "Show Exam Dates"
     ):
         result_df = create_result_dataframe(
-            df, course_list, "tr" if not language_on else "en", include_classroom=True
+            df, course_list, "tr" if not language_on else "en", include_classroom=False
         )
         st.dataframe(result_df, hide_index=True)
         createImage(result_df)
