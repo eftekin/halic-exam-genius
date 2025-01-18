@@ -198,7 +198,7 @@ def main():
         "Sınav Tarihlerini Göster" if not language_on else "Show Exam Dates"
     ):
         result_df = create_result_dataframe(
-            df, course_list, "tr" if not language_on else "en", include_classroom=False
+            df, course_list, "tr" if not language_on else "en", include_classroom=True
         )
         st.dataframe(result_df, hide_index=True)
         createImage(result_df)
