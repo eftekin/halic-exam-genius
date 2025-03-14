@@ -60,7 +60,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "18.01.2025 20:40"  # Last update date and time
+    last_update = "14.03.2025 13:40"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
@@ -171,14 +171,14 @@ def main():
 
     # Main Content: Exam Dates Section
     st.write(
-        "### 2024 Güz Dönemi Bütünleme Sınav Tarihleri"
+        "### 2025 Bahar Dönemi Ara Sınav Tarihleri"
         if not language_on
-        else "### 2024 Fall Semester Make-up Exam Dates"
+        else "### 2025 Spring Semester Midterm Exam Dates"
     )
     st.write(
-        "Aşağıda 2024 Güz dönemi için bütünleme sınav tarihleri yer almaktadır."
+        "Aşağıda 2025 Bahar dönemi için ara sınav tarihleri yer almaktadır."
         if not language_on
-        else "Below are the make-up exam dates for the 2024 Fall semester."
+        else "Below are the make-up exam dates for the 2025 Spring semester."
     )
     st.write(
         "Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin."

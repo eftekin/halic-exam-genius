@@ -41,7 +41,7 @@ def process_exam_data():
         pd.DataFrame: Processed exam data DataFrame
     """
     # URL of the exam schedule Excel file
-    url = "https://halic.edu.tr/tr/s-duyurular/Documents/2025/01/16/2024-2025-guz-donemi-butunleme-sinavi-tum-liste.xlsx"
+    url = "https://halic.edu.tr/tr/s-duyurular/Documents/2025/03/14/2024-2025-bahar-donemi-vize-sinavi-tum-liste.xlsx"
 
     # Download Excel file
     midterm_xls = requests.get(url)
