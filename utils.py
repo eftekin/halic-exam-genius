@@ -301,7 +301,7 @@ def createImage(df):
     fig.write_image("output/examgenius.png", scale=2)
 
 
-def create_ics_file(df, course_list, language="tr"):
+def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
     """
     Create an ICS file from the exam schedule data.
 
@@ -335,10 +335,12 @@ def create_ics_file(df, course_list, language="tr"):
         course_name_col = "Ders Adı"
         exam_date_col = "Sınav Tarihi"
         classroom_col = "Sınıf"
+        exam_type = "Vize"
     else:
         course_name_col = "Course Name"
         exam_date_col = "Exam Date"
         classroom_col = "Classroom Codes"
+        exam_type = "Midterm"
 
     # Process each row in the result DataFrame
     for _, row in result_df.iterrows():
@@ -369,9 +371,7 @@ def create_ics_file(df, course_list, language="tr"):
         event_uid = str(uuid.uuid4())
 
         # Create the event
-        summary = (
-            f"Exam: {course_name}" if language == "en" else f"Sınav: {course_name}"
-        )
+        summary = f"{course_name} {exam_type.title()}"
         location = (
             f"Location: {classroom}" if language == "en" else f"Sınıf: {classroom}"
         )
