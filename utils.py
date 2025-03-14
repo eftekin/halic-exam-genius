@@ -301,5 +301,107 @@ def createImage(df):
     fig.write_image("output/examgenius.png", scale=2)
 
 
+def create_ics_file(df, course_list, language="tr"):
+    """
+    Create an ICS file from the exam schedule data.
+
+    Args:
+        df (pd.DataFrame): Exam schedule DataFrame
+        course_list (list): List of selected courses
+        language (str): Language of the result ('tr' or 'en')
+
+    Returns:
+        str: ICS file content as a string
+    """
+    import datetime
+    import uuid
+
+    # Start with the ICS file header
+    ics_content = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//ExamGenius//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+    ]
+
+    # Get the result DataFrame to work with
+    result_df = create_result_dataframe(
+        df, course_list, language, include_classroom=True
+    )
+
+    # Determine column names based on language
+    if language == "tr":
+        course_name_col = "Ders Adı"
+        exam_date_col = "Sınav Tarihi"
+        classroom_col = "Sınıf"
+    else:
+        course_name_col = "Course Name"
+        exam_date_col = "Exam Date"
+        classroom_col = "Classroom Codes"
+
+    # Process each row in the result DataFrame
+    for _, row in result_df.iterrows():
+        course_name = row[course_name_col]
+        exam_date_str = row[exam_date_col]
+        classroom = row[classroom_col] if classroom_col in row else "N/A"
+
+        # Parse the date and time
+        date_parts = exam_date_str.split()
+        date_str = date_parts[0]  # Format: dd/mm/yyyy
+        time_str = date_parts[-1]  # Format: HH:MM
+
+        # Parse the date
+        day, month, year = map(int, date_str.split("/"))
+        hour, minute = map(int, time_str.split(":"))
+
+        # Create datetime objects for event start and end
+        start_datetime = datetime.datetime(year, month, day, hour, minute)
+        end_datetime = start_datetime + datetime.timedelta(
+            hours=2
+        )  # Assuming 2-hour exams
+
+        # Format dates for ICS
+        start_str = start_datetime.strftime("%Y%m%dT%H%M%S")
+        end_str = end_datetime.strftime("%Y%m%dT%H%M%S")
+
+        # Create a unique ID for the event
+        event_uid = str(uuid.uuid4())
+
+        # Create the event
+        summary = (
+            f"Exam: {course_name}" if language == "en" else f"Sınav: {course_name}"
+        )
+        location = (
+            f"Location: {classroom}" if language == "en" else f"Sınıf: {classroom}"
+        )
+        description = (
+            f"Midterm exam for {course_name}"
+            if language == "en"
+            else f"{course_name} ara sınavı"
+        )
+
+        # Add the event to the ICS content
+        ics_content.extend(
+            [
+                "BEGIN:VEVENT",
+                f"UID:{event_uid}",
+                f"DTSTAMP:{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}",
+                f"DTSTART:{start_str}",
+                f"DTEND:{end_str}",
+                f"SUMMARY:{summary}",
+                f"DESCRIPTION:{description}",
+                f"LOCATION:{classroom}",
+                "END:VEVENT",
+            ]
+        )
+
+    # Add the ICS file footer
+    ics_content.append("END:VCALENDAR")
+
+    # Join the ICS content with line breaks
+    return "\n".join(ics_content)
+
+
 # Main data processing
 df = process_exam_data()

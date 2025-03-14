@@ -1,6 +1,8 @@
+import io
+
 import streamlit as st
 
-from utils import create_result_dataframe, createImage, df
+from utils import create_ics_file, create_result_dataframe, createImage, df
 
 # Configure page settings - must be first Streamlit command
 st.set_page_config(page_title="Exam Genius", page_icon="📚")
@@ -79,6 +81,7 @@ def main():
                 3. **🎯 Geçme Notunu Ayarlayın**: Gereken minimum geçme notunu girin.
                 4. **🔍 Hesapla**: "Hesapla" butonuna tıklayarak girdiğiniz not ve yüzdelere göre geçip geçmediğinizi görün.
                 5. **📅 Sınav Tarihleri**: "Sınav Tarihleri" bölümünü kullanarak derslerinizin sınav tarihlerini görüntüleyin ve indirin.
+                6. **📆 Takvime Ekle**: "Takvime Ekle" butonu ile sınav tarihlerinizi takvim uygulamanıza ekleyebilirsiniz.
                 """
                 if not language_on
                 else """
@@ -87,6 +90,7 @@ def main():
                 3. **🎯 Set Passing Grade**: Enter the minimum passing grade required.
                 4. **🔍 Calculate**: Click on "Calculate" to see if you have passed based on the grades and weights you entered.
                 5. **📅 Exam Dates**: Use the "Exam Dates" section to view and download the exam dates for your courses.
+                6. **📆 Add to Calendar**: Use the "Add to Calendar" button to add your exam dates to your calendar application.
                 """
             )
             st.write(instructions)
@@ -192,7 +196,7 @@ def main():
         placeholder="Ders Kodu veya Adı" if not language_on else "Course Code or Name",
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     if len(course_list) > 0 and col1.button(
         "Sınav Tarihlerini Göster" if not language_on else "Show Exam Dates"
@@ -210,6 +214,22 @@ def main():
                 file_name="examgenius.png",
                 mime="image/png",
             )
+
+        # Create and offer download of ICS file
+        ics_content = create_ics_file(
+            df, course_list, "tr" if not language_on else "en"
+        )
+        ics_bytes = ics_content.encode()
+
+        col3.download_button(
+            "📆 Takvime Ekle" if not language_on else "📆 Add to Calendar",
+            data=io.BytesIO(ics_bytes),
+            file_name="exam_schedule.ics",
+            mime="text/calendar",
+            help="Sınav tarihlerini takvim uygulamanıza eklemek için tıklayın"
+            if not language_on
+            else "Click to add exam dates to your calendar application",
+        )
 
     # Footer: Update info and feedback side by side
     footer_col1, footer_col2 = st.columns(2)
