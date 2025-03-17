@@ -241,9 +241,9 @@ def main():
         )
     with footer_col2:
         st.caption(
-            "💌 Geri bildirim: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev)"
+            "💌 Geri bildirim: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) | [eftekin.com](https://eftekin.com)"
             if not language_on
-            else "💌 Feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev)"
+            else "💌 Feedback: [mustafa@eftekin.dev](mailto:mustafa@eftekin.dev) | [eftekin.com](https://eftekin.com)"
         )
 
 
