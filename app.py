@@ -62,7 +62,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "20.03.2025 14:30"  # Last update date and time
+    last_update = "05.05.2025 17:45"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
@@ -175,14 +175,14 @@ def main():
 
     # Main Content: Exam Dates Section
     st.write(
-        "### 2025 Bahar Dönemi Ara Sınav Tarihleri"
+        "### 2025 Bahar Dönemi Final Tarihleri"
         if not language_on
-        else "### 2025 Spring Semester Midterm Exam Dates"
+        else "### 2025 Spring Semester Final Exam Dates"
     )
     st.write(
-        "Aşağıda 2025 Bahar dönemi için ara sınav tarihleri yer almaktadır."
+        "Aşağıda 2025 Bahar dönemi için final tarihleri yer almaktadır."
         if not language_on
-        else "Below are the make-up exam dates for the 2025 Spring semester."
+        else "Below are the final exam dates for the 2025 Spring semester."
     )
     st.write(
         "Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin."
@@ -217,7 +217,7 @@ def main():
 
         # Create and offer download of ICS file
         ics_content = create_ics_file(
-            df, course_list, "tr" if not language_on else "en", exam_type="midterm"
+            df, course_list, "tr" if not language_on else "en", exam_type="final"
         )
         ics_bytes = ics_content.encode()
 
