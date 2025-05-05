@@ -309,6 +309,7 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         df (pd.DataFrame): Exam schedule DataFrame
         course_list (list): List of selected courses
         language (str): Language of the result ('tr' or 'en')
+        exam_type (str): Type of exam ('midterm' or 'final')
 
     Returns:
         str: ICS file content as a string
@@ -335,12 +336,12 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         course_name_col = "Ders Adı"
         exam_date_col = "Sınav Tarihi"
         classroom_col = "Sınıf"
-        exam_type = "Vize"
+        exam_type_tr = "Vize" if exam_type == "midterm" else "Final"
     else:
         course_name_col = "Course Name"
         exam_date_col = "Exam Date"
         classroom_col = "Classroom Codes"
-        exam_type = "Midterm"
+        exam_type_tr = "Midterm" if exam_type == "midterm" else "Final"
 
     # Process each row in the result DataFrame
     for _, row in result_df.iterrows():
@@ -371,14 +372,11 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         event_uid = str(uuid.uuid4())
 
         # Create the event
-        summary = f"{course_name} {exam_type.title()}"
-        location = (
-            f"Location: {classroom}" if language == "en" else f"Sınıf: {classroom}"
-        )
+        summary = f"{course_name} {exam_type_tr.title()}"
         description = (
-            f"Midterm exam for {course_name}"
+            f"{exam_type_tr} exam for {course_name}"
             if language == "en"
-            else f"{course_name} ara sınavı"
+            else f"{course_name} {exam_type_tr.lower()} sınavı"
         )
 
         # Add the event to the ICS content
