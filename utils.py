@@ -5,8 +5,8 @@ import io
 import pandas as pd
 import plotly.figure_factory as ff
 import requests
-from unidecode import unidecode
 import urllib3
+from unidecode import unidecode
 
 # Disable SSL warnings when verify=False is used
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -61,6 +61,7 @@ def process_exam_data():
     # Define column names for clarity and ease of use
     exam_date_column = "SINAV GÜNÜ"
     exam_time_column = "BAŞLANGIÇ SAATİ"
+    exam_finish_time_column = "BİTİŞ SAATİ"
     course_code_column = "DERS KODU"
     course_name_column = "DERS ADI"
     course_code_and_name_column = "DERS KODU VE ADI"
@@ -87,11 +88,17 @@ def process_exam_data():
     columns_to_use = [
         exam_date_column,
         exam_time_column,
+        exam_finish_time_column,
         course_code_column,
         course_name_column,
     ]
     if classroom_code_column in df.columns:
         columns_to_use.append(classroom_code_column)
+
+    # Only include finish time column if it exists in the DataFrame
+    if exam_finish_time_column not in df.columns:
+        columns_to_use.remove(exam_finish_time_column)
+
     df = df[columns_to_use]
 
     # Group by course code, taking first occurrence of date, time, and name
@@ -100,6 +107,11 @@ def process_exam_data():
         exam_time_column: "first",
         course_name_column: "first",
     }
+
+    # Add finish time to aggregation if it exists in the DataFrame
+    if exam_finish_time_column in df.columns:
+        agg_dict[exam_finish_time_column] = "first"
+
     if classroom_code_column in df.columns:
         agg_dict[classroom_code_column] = ", ".join
 
@@ -152,6 +164,7 @@ def tr_getExamDate(df, course_code):
     """
     exam_date_column = "SINAV GÜNÜ"
     exam_time_column = "BAŞLANGIÇ SAATİ"
+    exam_finish_time_column = "BİTİŞ SAATİ"
     course_code_and_name_column = "DERS KODU VE ADI"
 
     date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
@@ -162,12 +175,20 @@ def tr_getExamDate(df, course_code):
     date_full = format_date(date)
     formatted_date = f"{date_full} {week_day}"
 
-    time = df[df[course_code_and_name_column] == course_code][exam_time_column].values[
-        0
-    ]
-    time_str = parse_exam_time(time)
+    start_time = df[df[course_code_and_name_column] == course_code][
+        exam_time_column
+    ].values[0]
+    start_time_str = parse_exam_time(start_time)
 
-    return f"{formatted_date} {time_str}"
+    # Check if finish time exists and add it to the result
+    if exam_finish_time_column in df.columns:
+        finish_time = df[df[course_code_and_name_column] == course_code][
+            exam_finish_time_column
+        ].values[0]
+        finish_time_str = parse_exam_time(finish_time)
+        return f"{formatted_date} {start_time_str}-{finish_time_str}"
+    else:
+        return f"{formatted_date} {start_time_str}"
 
 
 def en_getExamDate(df, course_code):
@@ -183,6 +204,7 @@ def en_getExamDate(df, course_code):
     """
     exam_date_column = "SINAV GÜNÜ"
     exam_time_column = "BAŞLANGIÇ SAATİ"
+    exam_finish_time_column = "BİTİŞ SAATİ"
     course_code_and_name_column = "DERS KODU VE ADI"
 
     date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
@@ -193,12 +215,20 @@ def en_getExamDate(df, course_code):
     # Get day name in English
     date_en = f"{date_formatted} {datetime.datetime.strptime(date_formatted, '%d/%m/%Y').strftime('%A')}"
 
-    time = df[df[course_code_and_name_column] == course_code][exam_time_column].values[
-        0
-    ]
-    time_str = parse_exam_time(time)
+    start_time = df[df[course_code_and_name_column] == course_code][
+        exam_time_column
+    ].values[0]
+    start_time_str = parse_exam_time(start_time)
 
-    return f"{date_en} {time_str}"
+    # Check if finish time exists and add it to the result
+    if exam_finish_time_column in df.columns:
+        finish_time = df[df[course_code_and_name_column] == course_code][
+            exam_finish_time_column
+        ].values[0]
+        finish_time_str = parse_exam_time(finish_time)
+        return f"{date_en} {start_time_str}-{finish_time_str}"
+    else:
+        return f"{date_en} {start_time_str}"
 
 
 def getCourseName(df, course_code):
@@ -259,8 +289,16 @@ def create_result_dataframe(df, course_list, language="tr", include_classroom=Fa
     # Sort by date and time
     def parse_date(date_str):
         date_parts = date_str.split()
+        time_part = date_parts[2]  # Extract time part
+
+        # Handle both single time and time range formats
+        if "-" in time_part:
+            start_time = time_part.split("-")[0]
+        else:
+            start_time = time_part
+
         return datetime.datetime.strptime(
-            f"{date_parts[0]} {date_parts[2]}", "%d/%m/%Y %H:%M"
+            f"{date_parts[0]} {start_time}", "%d/%m/%Y %H:%M"
         )
 
     result_df["Parsed Date"] = result_df[column_name].apply(parse_date)
@@ -364,17 +402,29 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         # Parse the date and time
         date_parts = exam_date_str.split()
         date_str = date_parts[0]  # Format: dd/mm/yyyy
-        time_str = date_parts[-1]  # Format: HH:MM
+        time_part = date_parts[-1]  # Format: HH:MM or HH:MM-HH:MM
 
         # Parse the date
         day, month, year = map(int, date_str.split("/"))
-        hour, minute = map(int, time_str.split(":"))
 
-        # Create datetime objects for event start and end
-        start_datetime = datetime.datetime(year, month, day, hour, minute)
-        end_datetime = start_datetime + datetime.timedelta(
-            hours=2
-        )  # Assuming 2-hour exams
+        # Handle time parsing (could be start time only or start-end time)
+        if "-" in time_part:
+            # Both start and end times are provided
+            start_time_str, end_time_str = time_part.split("-")
+            start_hour, start_minute = map(int, start_time_str.split(":"))
+            end_hour, end_minute = map(int, end_time_str.split(":"))
+
+            start_datetime = datetime.datetime(
+                year, month, day, start_hour, start_minute
+            )
+            end_datetime = datetime.datetime(year, month, day, end_hour, end_minute)
+        else:
+            # Only start time provided, assume 2-hour duration
+            start_hour, start_minute = map(int, time_part.split(":"))
+            start_datetime = datetime.datetime(
+                year, month, day, start_hour, start_minute
+            )
+            end_datetime = start_datetime + datetime.timedelta(hours=2)
 
         # Format dates for ICS
         start_str = start_datetime.strftime("%Y%m%dT%H%M%S")
