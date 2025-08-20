@@ -1,10 +1,15 @@
 # Import required libraries
 import datetime
+import io
 
 import pandas as pd
 import plotly.figure_factory as ff
 import requests
 from unidecode import unidecode
+import urllib3
+
+# Disable SSL warnings when verify=False is used
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def format_date(date_str):
@@ -43,8 +48,15 @@ def process_exam_data():
     # URL of the exam schedule Excel file
     url = "https://halic.edu.tr/tr/s-duyurular/Documents/2025/05/05/2024-2025-bahar-donemi-final-sinavlari-tum-liste.xlsx"
 
-    # Download Excel file
-    midterm_xls = requests.get(url)
+    try:
+        # Download Excel file with SSL verification disabled and timeout
+        # Note: verify=False is used due to SSL certificate issues with halic.edu.tr
+        midterm_xls = requests.get(url, verify=False, timeout=30)
+        midterm_xls.raise_for_status()  # Raise an exception for bad status codes
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading exam data: {e}")
+        # Return empty DataFrame or raise exception based on your preference
+        raise Exception(f"Failed to download exam schedule from {url}: {e}")
 
     # Define column names for clarity and ease of use
     exam_date_column = "SINAV GÜNÜ"
@@ -54,8 +66,8 @@ def process_exam_data():
     course_code_and_name_column = "DERS KODU VE ADI"
     classroom_code_column = "DERSLİK/ODA KODLARI"  # Add classroom column
 
-    # Read Excel file into DataFrame
-    df = pd.read_excel(midterm_xls.content)
+    # Read Excel file into DataFrame using BytesIO to avoid deprecation warning
+    df = pd.read_excel(io.BytesIO(midterm_xls.content))
 
     # Clean and process course data
     df[course_code_column] = df[course_code_column].apply(lambda x: x.split(";")[0])
