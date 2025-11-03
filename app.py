@@ -62,7 +62,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "05.05.2025 17:45"  # Last update date and time
+    last_update = "03.11.2025 17:00"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
@@ -226,9 +226,11 @@ def main():
             data=io.BytesIO(ics_bytes),
             file_name="exam_schedule.ics",
             mime="text/calendar",
-            help="Sınav tarihlerini takvim uygulamanıza eklemek için tıklayın"
-            if not language_on
-            else "Click to add exam dates to your calendar application",
+            help=(
+                "Sınav tarihlerini takvim uygulamanıza eklemek için tıklayın"
+                if not language_on
+                else "Click to add exam dates to your calendar application"
+            ),
         )
 
     # Footer: Update info and feedback side by side
