@@ -1,6 +1,7 @@
 # Import required libraries
 import datetime
 import io
+import os
 
 import pandas as pd
 import plotly.figure_factory as ff
@@ -46,7 +47,7 @@ def process_exam_data():
         pd.DataFrame: Processed exam data DataFrame
     """
     # URL of the exam schedule Excel file
-    url = "https://halic.edu.tr/tr/s-duyurular/Documents/2025/05/05/2024-2025-bahar-donemi-final-sinavlari-tum-liste.xlsx"
+    url = "https://halic.edu.tr/wp-content/uploads/duyurular/2025/11/03/2025-2026-guz-vize-tum-liste.xlsx"
 
     try:
         # Download Excel file with SSL verification disabled and timeout
@@ -348,7 +349,36 @@ def createImage(df):
     fig.layout.width = width if width > 800 else 800
     fig.update_layout(autosize=True)
 
-    fig.write_image("output/examgenius.png", scale=2)
+    # Ensure output directory exists
+    try:
+        os.makedirs("output", exist_ok=True)
+    except Exception:
+        pass
+
+    # Try to export a static image. If Kaleido is not available, provide
+    # a helpful message and fall back to saving an interactive HTML file.
+    try:
+        fig.write_image("output/examgenius.png", scale=2)
+        print("Saved image to output/examgenius.png")
+    except ValueError as e:
+        # Plotly raises a ValueError when the configured image engine
+        # (kaleido) is not available. Detect that case and show an
+        # actionable instruction to install kaleido.
+        msg = str(e)
+        if "kaleido" in msg.lower():
+            print("Kaleido is required for image export but it's not installed.")
+            print("Install it with:\n  python3 -m pip install --upgrade kaleido")
+        else:
+            print("Error exporting image:", e)
+
+        # Fallback: save an interactive HTML version so the user still has output
+        try:
+            fig.write_html("output/examgenius.html")
+            print("Saved interactive HTML fallback at output/examgenius.html")
+        except Exception as e2:
+            print("Failed to save fallback HTML:", e2)
+    except Exception as e:
+        print("Unexpected error when exporting image:", e)
 
 
 def create_ics_file(df, course_list, language="tr", exam_type="midterm"):

@@ -175,14 +175,14 @@ def main():
 
     # Main Content: Exam Dates Section
     st.write(
-        "### 2025 Bahar Dönemi Final Tarihleri"
+        "### 2025 Güz Dönemi Vize Tarihleri"
         if not language_on
-        else "### 2025 Spring Semester Final Exam Dates"
+        else "### 2025 Fall Semester Midterm Exam Dates"
     )
     st.write(
-        "Aşağıda 2025 Bahar dönemi için final tarihleri yer almaktadır."
+        "Aşağıda 2025 Güz dönemi için vize tarihleri yer almaktadır."
         if not language_on
-        else "Below are the final exam dates for the 2025 Spring semester."
+        else "Below are the midterm exam dates for the 2025 Fall semester."
     )
     st.write(
         "Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin."
