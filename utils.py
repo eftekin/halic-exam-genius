@@ -162,27 +162,31 @@ def get_exam_date(df, course_code, language="tr"):
 
     Returns:
         str: Formatted exam date and time
+        
+    Raises:
+        ValueError: If course_code is not found in the DataFrame
     """
-    date = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][EXAM_DATE_COLUMN].values[0]
+    # Validate that the course exists
+    course_rows = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code]
+    if len(course_rows) == 0:
+        raise ValueError(f"Course '{course_code}' not found in exam schedule")
+    
+    date = course_rows[EXAM_DATE_COLUMN].values[0]
     
     if language == "tr":
         week_day = date.split(" ")[1]
-        date_full = format_date(date)
+        date_full = format_date(date.split(" ")[0])
         formatted_date = f"{date_full} {week_day}"
     else:  # English
         date_formatted = format_date(date.split(" ")[0])
         formatted_date = f"{date_formatted} {datetime.datetime.strptime(date_formatted, '%d/%m/%Y').strftime('%A')}"
 
-    start_time = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
-        EXAM_TIME_COLUMN
-    ].values[0]
+    start_time = course_rows[EXAM_TIME_COLUMN].values[0]
     start_time_str = parse_exam_time(start_time)
 
     # Check if finish time exists and add it to the result
     if EXAM_FINISH_TIME_COLUMN in df.columns:
-        finish_time = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
-            EXAM_FINISH_TIME_COLUMN
-        ].values[0]
+        finish_time = course_rows[EXAM_FINISH_TIME_COLUMN].values[0]
         finish_time_str = parse_exam_time(finish_time)
         return f"{formatted_date} {start_time_str}-{finish_time_str}"
     else:
@@ -231,10 +235,15 @@ def getCourseName(df, course_code):
 
     Returns:
         str: Course name
+        
+    Raises:
+        ValueError: If course_code is not found in the DataFrame
     """
-    return df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
-        COURSE_NAME_COLUMN
-    ].values[0]
+    course_rows = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code]
+    if len(course_rows) == 0:
+        raise ValueError(f"Course '{course_code}' not found in exam schedule")
+    
+    return course_rows[COURSE_NAME_COLUMN].values[0]
 
 
 def get_language_column_names(language="tr"):
@@ -325,13 +334,18 @@ def getClassroom(df, course_code):
 
     Returns:
         str: Formatted classroom codes
+        
+    Raises:
+        ValueError: If course_code is not found in the DataFrame
     """
     if CLASSROOM_CODE_COLUMN not in df.columns:
         return "N/A"
 
-    classroom = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
-        CLASSROOM_CODE_COLUMN
-    ].values[0]
+    course_rows = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code]
+    if len(course_rows) == 0:
+        raise ValueError(f"Course '{course_code}' not found in exam schedule")
+
+    classroom = course_rows[CLASSROOM_CODE_COLUMN].values[0]
     if len(str(classroom).split(",")) > 5:
         classroom = str(classroom).split(",")[:5]
         classroom = ",".join(str(element) for element in classroom) + "..."
@@ -488,7 +502,7 @@ def get_df():
 # but don't fail if network is unavailable
 try:
     df = process_exam_data()
-except Exception:
+except (requests.exceptions.RequestException, ConnectionError, Exception) as e:
     # If data fetch fails at import time, df will be None
     # Functions should use get_df() for lazy loading
     df = None
