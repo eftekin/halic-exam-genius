@@ -237,6 +237,30 @@ def getCourseName(df, course_code):
     ].values[0]
 
 
+def get_language_column_names(language="tr"):
+    """
+    Get column names based on language.
+    
+    Args:
+        language (str): Language code ('tr' or 'en')
+    
+    Returns:
+        dict: Dictionary with column name mappings
+    """
+    if language == "tr":
+        return {
+            "course_name": "Ders Adı",
+            "exam_date": "Sınav Tarihi",
+            "classroom": "Sınıf"
+        }
+    else:
+        return {
+            "course_name": "Course Name",
+            "exam_date": "Exam Date",
+            "classroom": "Classroom Codes"
+        }
+
+
 def create_result_dataframe(df, course_list, language="tr", include_classroom=False):
     """
     Create a result DataFrame with sorted exam dates.
@@ -250,15 +274,11 @@ def create_result_dataframe(df, course_list, language="tr", include_classroom=Fa
     Returns:
         pd.DataFrame: Sorted result DataFrame
     """
-    # Define column names based on language
-    if language == "tr":
-        course_name_col = "Ders Adı"
-        exam_date_col = "Sınav Tarihi"
-        classroom_col = "Sınıf"
-    else:
-        course_name_col = "Course Name"
-        exam_date_col = "Exam Date"
-        classroom_col = "Classroom Codes"
+    # Get column names based on language
+    col_names = get_language_column_names(language)
+    course_name_col = col_names["course_name"]
+    exam_date_col = col_names["exam_date"]
+    classroom_col = col_names["classroom"]
     
     # Build column list
     columns = [course_name_col, exam_date_col]
@@ -366,17 +386,16 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         df, course_list, language, include_classroom=True
     )
 
-    # Determine column names based on language
-    if language == "tr":
-        course_name_col = "Ders Adı"
-        exam_date_col = "Sınav Tarihi"
-        classroom_col = "Sınıf"
-        exam_type_tr = "Vize" if exam_type == "midterm" else "Final"
-    else:
-        course_name_col = "Course Name"
-        exam_date_col = "Exam Date"
-        classroom_col = "Classroom Codes"
-        exam_type_tr = "Midterm" if exam_type == "midterm" else "Final"
+    # Get column names based on language
+    col_names = get_language_column_names(language)
+    course_name_col = col_names["course_name"]
+    exam_date_col = col_names["exam_date"]
+    classroom_col = col_names["classroom"]
+    
+    # Determine exam type text based on language
+    exam_type_text = "Vize" if exam_type == "midterm" else "Final"
+    if language == "en":
+        exam_type_text = "Midterm" if exam_type == "midterm" else "Final"
 
     # Process each row in the result DataFrame
     for _, row in result_df.iterrows():
@@ -419,11 +438,11 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
         event_uid = str(uuid.uuid4())
 
         # Create the event
-        summary = f"{course_name} {exam_type_tr.title()}"
+        summary = f"{course_name} {exam_type_text.title()}"
         description = (
-            f"{exam_type_tr} exam for {course_name}"
+            f"{exam_type_text} exam for {course_name}"
             if language == "en"
-            else f"{course_name} {exam_type_tr.lower()} sınavı"
+            else f"{course_name} {exam_type_text.lower()} sınavı"
         )
 
         # Add the event to the ICS content
@@ -448,5 +467,28 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
     return "\n".join(ics_content)
 
 
-# Main data processing
-df = process_exam_data()
+# Global DataFrame - initialized lazily
+_df_cache = None
+
+
+def get_df():
+    """
+    Get the exam data DataFrame, loading it if necessary.
+    
+    Returns:
+        pd.DataFrame: Exam schedule DataFrame
+    """
+    global _df_cache
+    if _df_cache is None:
+        _df_cache = process_exam_data()
+    return _df_cache
+
+
+# For backward compatibility, try to load df at module import
+# but don't fail if network is unavailable
+try:
+    df = process_exam_data()
+except Exception:
+    # If data fetch fails at import time, df will be None
+    # Functions should use get_df() for lazy loading
+    df = None
