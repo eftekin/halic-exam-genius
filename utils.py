@@ -11,6 +11,15 @@ from unidecode import unidecode
 # Disable SSL warnings when verify=False is used
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Column name constants
+EXAM_DATE_COLUMN = "SINAV GÜNÜ"
+EXAM_TIME_COLUMN = "BAŞLANGIÇ SAATİ"
+EXAM_FINISH_TIME_COLUMN = "BİTİŞ SAATİ"
+COURSE_CODE_COLUMN = "DERS KODU"
+COURSE_NAME_COLUMN = "DERS ADI"
+COURSE_CODE_AND_NAME_COLUMN = "DERS KODU VE ADI"
+CLASSROOM_CODE_COLUMN = "DERSLİK/ODA KODLARI"
+
 
 def format_date(date_str):
     """
@@ -58,71 +67,62 @@ def process_exam_data():
         # Return empty DataFrame or raise exception based on your preference
         raise Exception(f"Failed to download exam schedule from {url}: {e}")
 
-    # Define column names for clarity and ease of use
-    exam_date_column = "SINAV GÜNÜ"
-    exam_time_column = "BAŞLANGIÇ SAATİ"
-    exam_finish_time_column = "BİTİŞ SAATİ"
-    course_code_column = "DERS KODU"
-    course_name_column = "DERS ADI"
-    course_code_and_name_column = "DERS KODU VE ADI"
-    classroom_code_column = "DERSLİK/ODA KODLARI"  # Add classroom column
-
     # Read Excel file into DataFrame using BytesIO to avoid deprecation warning
     df = pd.read_excel(io.BytesIO(midterm_xls.content))
 
     # Clean and process course data
-    df[course_code_column] = df[course_code_column].apply(lambda x: x.split(";")[0])
-    df[course_name_column] = df[course_name_column].apply(lambda x: x.split(";")[0])
-    df[course_code_column] = df[course_code_column].apply(
+    df[COURSE_CODE_COLUMN] = df[COURSE_CODE_COLUMN].apply(lambda x: x.split(";")[0])
+    df[COURSE_NAME_COLUMN] = df[COURSE_NAME_COLUMN].apply(lambda x: x.split(";")[0])
+    df[COURSE_CODE_COLUMN] = df[COURSE_CODE_COLUMN].apply(
         lambda y: unidecode(y).lower()
     )
 
     # Clean classroom data if it exists
-    if classroom_code_column in df.columns:
-        df[classroom_code_column] = df[classroom_code_column].apply(lambda x: str(x))
-        df[classroom_code_column] = df[classroom_code_column].apply(
+    if CLASSROOM_CODE_COLUMN in df.columns:
+        df[CLASSROOM_CODE_COLUMN] = df[CLASSROOM_CODE_COLUMN].apply(lambda x: str(x))
+        df[CLASSROOM_CODE_COLUMN] = df[CLASSROOM_CODE_COLUMN].apply(
             lambda x: x.replace(";", ",")
         )
 
     # Select and group relevant columns
     columns_to_use = [
-        exam_date_column,
-        exam_time_column,
-        exam_finish_time_column,
-        course_code_column,
-        course_name_column,
+        EXAM_DATE_COLUMN,
+        EXAM_TIME_COLUMN,
+        EXAM_FINISH_TIME_COLUMN,
+        COURSE_CODE_COLUMN,
+        COURSE_NAME_COLUMN,
     ]
-    if classroom_code_column in df.columns:
-        columns_to_use.append(classroom_code_column)
+    if CLASSROOM_CODE_COLUMN in df.columns:
+        columns_to_use.append(CLASSROOM_CODE_COLUMN)
 
     # Only include finish time column if it exists in the DataFrame
-    if exam_finish_time_column not in df.columns:
-        columns_to_use.remove(exam_finish_time_column)
+    if EXAM_FINISH_TIME_COLUMN not in df.columns:
+        columns_to_use.remove(EXAM_FINISH_TIME_COLUMN)
 
     df = df[columns_to_use]
 
     # Group by course code, taking first occurrence of date, time, and name
     agg_dict = {
-        exam_date_column: "first",
-        exam_time_column: "first",
-        course_name_column: "first",
+        EXAM_DATE_COLUMN: "first",
+        EXAM_TIME_COLUMN: "first",
+        COURSE_NAME_COLUMN: "first",
     }
 
     # Add finish time to aggregation if it exists in the DataFrame
-    if exam_finish_time_column in df.columns:
-        agg_dict[exam_finish_time_column] = "first"
+    if EXAM_FINISH_TIME_COLUMN in df.columns:
+        agg_dict[EXAM_FINISH_TIME_COLUMN] = "first"
 
-    if classroom_code_column in df.columns:
-        agg_dict[classroom_code_column] = ", ".join
+    if CLASSROOM_CODE_COLUMN in df.columns:
+        agg_dict[CLASSROOM_CODE_COLUMN] = ", ".join
 
-    df = df.groupby(course_code_column).agg(agg_dict).reset_index()
+    df = df.groupby(COURSE_CODE_COLUMN).agg(agg_dict).reset_index()
 
     # Sort by exam date
-    df = df.sort_values(by=exam_date_column)
+    df = df.sort_values(by=EXAM_DATE_COLUMN)
 
     # Create a combined course code and name column
-    df[course_code_and_name_column] = (
-        df[course_code_column].str.upper() + " (" + df[course_name_column] + ")"
+    df[COURSE_CODE_AND_NAME_COLUMN] = (
+        df[COURSE_CODE_COLUMN].str.upper() + " (" + df[COURSE_NAME_COLUMN] + ")"
     )
 
     return df
@@ -151,9 +151,49 @@ def parse_exam_time(time_value):
     return time_obj.strftime("%H:%M")
 
 
+def get_exam_date(df, course_code, language="tr"):
+    """
+    Retrieve exam date in specified language format.
+
+    Args:
+        df (pd.DataFrame): Exam schedule DataFrame
+        course_code (str): Course code and name
+        language (str): Language for formatting ('tr' or 'en')
+
+    Returns:
+        str: Formatted exam date and time
+    """
+    date = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][EXAM_DATE_COLUMN].values[0]
+    
+    if language == "tr":
+        week_day = date.split(" ")[1]
+        date_full = format_date(date)
+        formatted_date = f"{date_full} {week_day}"
+    else:  # English
+        date_formatted = format_date(date.split(" ")[0])
+        formatted_date = f"{date_formatted} {datetime.datetime.strptime(date_formatted, '%d/%m/%Y').strftime('%A')}"
+
+    start_time = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
+        EXAM_TIME_COLUMN
+    ].values[0]
+    start_time_str = parse_exam_time(start_time)
+
+    # Check if finish time exists and add it to the result
+    if EXAM_FINISH_TIME_COLUMN in df.columns:
+        finish_time = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
+            EXAM_FINISH_TIME_COLUMN
+        ].values[0]
+        finish_time_str = parse_exam_time(finish_time)
+        return f"{formatted_date} {start_time_str}-{finish_time_str}"
+    else:
+        return f"{formatted_date} {start_time_str}"
+
+
 def tr_getExamDate(df, course_code):
     """
     Retrieve exam date in Turkish format.
+    
+    Note: This function is deprecated. Use get_exam_date(df, course_code, "tr") instead.
 
     Args:
         df (pd.DataFrame): Exam schedule DataFrame
@@ -162,38 +202,14 @@ def tr_getExamDate(df, course_code):
     Returns:
         str: Formatted exam date and time in Turkish
     """
-    exam_date_column = "SINAV GÜNÜ"
-    exam_time_column = "BAŞLANGIÇ SAATİ"
-    exam_finish_time_column = "BİTİŞ SAATİ"
-    course_code_and_name_column = "DERS KODU VE ADI"
-
-    date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
-        0
-    ]
-    week_day = date.split(" ")[1]
-
-    date_full = format_date(date)
-    formatted_date = f"{date_full} {week_day}"
-
-    start_time = df[df[course_code_and_name_column] == course_code][
-        exam_time_column
-    ].values[0]
-    start_time_str = parse_exam_time(start_time)
-
-    # Check if finish time exists and add it to the result
-    if exam_finish_time_column in df.columns:
-        finish_time = df[df[course_code_and_name_column] == course_code][
-            exam_finish_time_column
-        ].values[0]
-        finish_time_str = parse_exam_time(finish_time)
-        return f"{formatted_date} {start_time_str}-{finish_time_str}"
-    else:
-        return f"{formatted_date} {start_time_str}"
+    return get_exam_date(df, course_code, "tr")
 
 
 def en_getExamDate(df, course_code):
     """
     Retrieve exam date in English format.
+    
+    Note: This function is deprecated. Use get_exam_date(df, course_code, "en") instead.
 
     Args:
         df (pd.DataFrame): Exam schedule DataFrame
@@ -202,33 +218,7 @@ def en_getExamDate(df, course_code):
     Returns:
         str: Formatted exam date and time in English
     """
-    exam_date_column = "SINAV GÜNÜ"
-    exam_time_column = "BAŞLANGIÇ SAATİ"
-    exam_finish_time_column = "BİTİŞ SAATİ"
-    course_code_and_name_column = "DERS KODU VE ADI"
-
-    date = df[df[course_code_and_name_column] == course_code][exam_date_column].values[
-        0
-    ]
-    date_formatted = format_date(date.split(" ")[0])
-
-    # Get day name in English
-    date_en = f"{date_formatted} {datetime.datetime.strptime(date_formatted, '%d/%m/%Y').strftime('%A')}"
-
-    start_time = df[df[course_code_and_name_column] == course_code][
-        exam_time_column
-    ].values[0]
-    start_time_str = parse_exam_time(start_time)
-
-    # Check if finish time exists and add it to the result
-    if exam_finish_time_column in df.columns:
-        finish_time = df[df[course_code_and_name_column] == course_code][
-            exam_finish_time_column
-        ].values[0]
-        finish_time_str = parse_exam_time(finish_time)
-        return f"{date_en} {start_time_str}-{finish_time_str}"
-    else:
-        return f"{date_en} {start_time_str}"
+    return get_exam_date(df, course_code, "en")
 
 
 def getCourseName(df, course_code):
@@ -242,11 +232,8 @@ def getCourseName(df, course_code):
     Returns:
         str: Course name
     """
-    course_code_and_name_column = "DERS KODU VE ADI"
-    course_name_column = "DERS ADI"
-
-    return df[df[course_code_and_name_column] == course_code][
-        course_name_column
+    return df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
+        COURSE_NAME_COLUMN
     ].values[0]
 
 
@@ -263,28 +250,29 @@ def create_result_dataframe(df, course_list, language="tr", include_classroom=Fa
     Returns:
         pd.DataFrame: Sorted result DataFrame
     """
+    # Define column names based on language
     if language == "tr":
-        columns = ["Ders Adı", "Sınav Tarihi"]
-        if include_classroom:
-            columns.append("Sınıf")
-        result_df = pd.DataFrame([], columns=columns)
-        for course in course_list:
-            list_row = [getCourseName(df, course), tr_getExamDate(df, course)]
-            if include_classroom:
-                list_row.append(getClassroom(df, course))
-            result_df.loc[len(result_df)] = list_row
-        column_name = "Sınav Tarihi"
+        course_name_col = "Ders Adı"
+        exam_date_col = "Sınav Tarihi"
+        classroom_col = "Sınıf"
     else:
-        columns = ["Course Name", "Exam Date"]
+        course_name_col = "Course Name"
+        exam_date_col = "Exam Date"
+        classroom_col = "Classroom Codes"
+    
+    # Build column list
+    columns = [course_name_col, exam_date_col]
+    if include_classroom:
+        columns.append(classroom_col)
+    
+    # Create result DataFrame
+    result_df = pd.DataFrame([], columns=columns)
+    
+    for course in course_list:
+        list_row = [getCourseName(df, course), get_exam_date(df, course, language)]
         if include_classroom:
-            columns.append("Classroom Codes")
-        result_df = pd.DataFrame([], columns=columns)
-        for course in course_list:
-            list_row = [getCourseName(df, course), en_getExamDate(df, course)]
-            if include_classroom:
-                list_row.append(getClassroom(df, course))
-            result_df.loc[len(result_df)] = list_row
-        column_name = "Exam Date"
+            list_row.append(getClassroom(df, course))
+        result_df.loc[len(result_df)] = list_row
 
     # Sort by date and time
     def parse_date(date_str):
@@ -301,7 +289,7 @@ def create_result_dataframe(df, course_list, language="tr", include_classroom=Fa
             f"{date_parts[0]} {start_time}", "%d/%m/%Y %H:%M"
         )
 
-    result_df["Parsed Date"] = result_df[column_name].apply(parse_date)
+    result_df["Parsed Date"] = result_df[exam_date_col].apply(parse_date)
     result_df = result_df.sort_values("Parsed Date").drop("Parsed Date", axis=1)
 
     return result_df
@@ -318,14 +306,11 @@ def getClassroom(df, course_code):
     Returns:
         str: Formatted classroom codes
     """
-    course_code_and_name_column = "DERS KODU VE ADI"
-    classroom_code_column = "DERSLİK/ODA KODLARI"
-
-    if classroom_code_column not in df.columns:
+    if CLASSROOM_CODE_COLUMN not in df.columns:
         return "N/A"
 
-    classroom = df[df[course_code_and_name_column] == course_code][
-        classroom_code_column
+    classroom = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code][
+        CLASSROOM_CODE_COLUMN
     ].values[0]
     if len(str(classroom).split(",")) > 5:
         classroom = str(classroom).split(",")[:5]
