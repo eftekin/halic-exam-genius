@@ -217,7 +217,7 @@ def main():
 
         # Create and offer download of ICS file
         ics_content = create_ics_file(
-            df, course_list, "tr" if not language_on else "en", exam_type="final"
+            df, course_list, "tr" if not language_on else "en", exam_type="midterm"
         )
         ics_bytes = ics_content.encode()
 

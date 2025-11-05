@@ -162,7 +162,7 @@ def get_exam_date(df, course_code, language="tr"):
 
     Returns:
         str: Formatted exam date and time
-        
+
     Raises:
         ValueError: If course_code is not found in the DataFrame
     """
@@ -170,9 +170,9 @@ def get_exam_date(df, course_code, language="tr"):
     course_rows = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code]
     if len(course_rows) == 0:
         raise ValueError(f"Course '{course_code}' not found in exam schedule")
-    
+
     date = course_rows[EXAM_DATE_COLUMN].values[0]
-    
+
     if language == "tr":
         week_day = date.split(" ")[1]
         date_full = format_date(date.split(" ")[0])
@@ -196,7 +196,7 @@ def get_exam_date(df, course_code, language="tr"):
 def tr_getExamDate(df, course_code):
     """
     Retrieve exam date in Turkish format.
-    
+
     Note: This function is deprecated. Use get_exam_date(df, course_code, "tr") instead.
 
     Args:
@@ -212,7 +212,7 @@ def tr_getExamDate(df, course_code):
 def en_getExamDate(df, course_code):
     """
     Retrieve exam date in English format.
-    
+
     Note: This function is deprecated. Use get_exam_date(df, course_code, "en") instead.
 
     Args:
@@ -235,24 +235,24 @@ def getCourseName(df, course_code):
 
     Returns:
         str: Course name
-        
+
     Raises:
         ValueError: If course_code is not found in the DataFrame
     """
     course_rows = df[df[COURSE_CODE_AND_NAME_COLUMN] == course_code]
     if len(course_rows) == 0:
         raise ValueError(f"Course '{course_code}' not found in exam schedule")
-    
+
     return course_rows[COURSE_NAME_COLUMN].values[0]
 
 
 def get_language_column_names(language="tr"):
     """
     Get column names based on language.
-    
+
     Args:
         language (str): Language code ('tr' or 'en')
-    
+
     Returns:
         dict: Dictionary with column name mappings
     """
@@ -260,13 +260,13 @@ def get_language_column_names(language="tr"):
         return {
             "course_name": "Ders Adı",
             "exam_date": "Sınav Tarihi",
-            "classroom": "Sınıf"
+            "classroom": "Sınıf",
         }
     else:
         return {
             "course_name": "Course Name",
             "exam_date": "Exam Date",
-            "classroom": "Classroom Codes"
+            "classroom": "Classroom Codes",
         }
 
 
@@ -288,15 +288,15 @@ def create_result_dataframe(df, course_list, language="tr", include_classroom=Fa
     course_name_col = col_names["course_name"]
     exam_date_col = col_names["exam_date"]
     classroom_col = col_names["classroom"]
-    
+
     # Build column list
     columns = [course_name_col, exam_date_col]
     if include_classroom:
         columns.append(classroom_col)
-    
+
     # Create result DataFrame
     result_df = pd.DataFrame([], columns=columns)
-    
+
     for course in course_list:
         list_row = [getCourseName(df, course), get_exam_date(df, course, language)]
         if include_classroom:
@@ -334,7 +334,7 @@ def getClassroom(df, course_code):
 
     Returns:
         str: Formatted classroom codes
-        
+
     Raises:
         ValueError: If course_code is not found in the DataFrame
     """
@@ -405,7 +405,7 @@ def create_ics_file(df, course_list, language="tr", exam_type="midterm"):
     course_name_col = col_names["course_name"]
     exam_date_col = col_names["exam_date"]
     classroom_col = col_names["classroom"]
-    
+
     # Determine exam type text based on language
     exam_type_text = "Vize" if exam_type == "midterm" else "Final"
     if language == "en":
@@ -488,7 +488,7 @@ _df_cache = None
 def get_df():
     """
     Get the exam data DataFrame, loading it if necessary.
-    
+
     Returns:
         pd.DataFrame: Exam schedule DataFrame
     """
