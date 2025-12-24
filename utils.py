@@ -55,7 +55,7 @@ def process_exam_data():
         pd.DataFrame: Processed exam data DataFrame
     """
     # URL of the exam schedule Excel file
-    url = "https://halic.edu.tr/wp-content/uploads/duyurular/2025/11/03/2025-2026-guz-vize-tum-liste.xlsx"
+    url = "https://halic.edu.tr/wp-content/uploads/duyurular/2025/12/24/2025-2026-guz-final-tum-liste.xlsx"
 
     try:
         # Download Excel file with SSL verification disabled and timeout

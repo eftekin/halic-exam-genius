@@ -175,14 +175,14 @@ def main():
 
     # Main Content: Exam Dates Section
     st.write(
-        "### 2025 Güz Dönemi Vize Tarihleri"
+        "### 2025 Güz Dönemi Final Tarihleri"
         if not language_on
-        else "### 2025 Fall Semester Midterm Exam Dates"
+        else "### 2025 Fall Semester Final Exam Dates"
     )
     st.write(
-        "Aşağıda 2025 Güz dönemi için vize tarihleri yer almaktadır."
+        "Aşağıda 2025 Güz dönemi için final tarihleri yer almaktadır."
         if not language_on
-        else "Below are the midterm exam dates for the 2025 Fall semester."
+        else "Below are the final exam dates for the 2025 Fall semester."
     )
     st.write(
         "Lütfen sınav tarihlerini görmek istediğiniz ders kodlarını seçin."
@@ -217,7 +217,7 @@ def main():
 
         # Create and offer download of ICS file
         ics_content = create_ics_file(
-            df, course_list, "tr" if not language_on else "en", exam_type="midterm"
+            df, course_list, "tr" if not language_on else "en", exam_type="final"
         )
         ics_bytes = ics_content.encode()
 
