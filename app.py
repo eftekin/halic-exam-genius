@@ -62,7 +62,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "11.11.2025 13:00"  # Last update date and time
+    last_update = "24.12.2025 14:10"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
