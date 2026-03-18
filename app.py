@@ -1,11 +1,104 @@
 import io
 
+
 import streamlit as st
+
 
 from utils import create_ics_file, create_result_dataframe, createImage, df
 
+
 # Configure page settings - must be first Streamlit command
 st.set_page_config(page_title="Exam Genius", page_icon="📚")
+
+# --- MIGRATION ANNOUNCEMENT CARD ---
+st.markdown(
+    """
+    <style>
+        .pro-animated {
+            background: linear-gradient(90deg, #a21caf 0%, #6366f1 100%);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            animation: pro-gradient-move 2.2s linear infinite alternate;
+            padding: 0 0.1em;
+            letter-spacing: 1px;
+        }
+        @keyframes pro-gradient-move {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+    body {
+        background: #18192a !important;
+    }
+    .migration-card {
+        max-width: 480px;
+        margin: 7vh auto 0 auto;
+        background: #23244a;
+        border-radius: 18px;
+        box-shadow: 0 4px 32px 0 #4f46e555, 0 1.5px 8px 0 #a21caf33;
+        border: 2.5px solid #6366f1;
+        padding: 2.5em 2em 2.2em 2em;
+        color: #fff;
+        text-align: center;
+        font-family: 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    }
+    .migration-card h1 {
+        font-size: 1.7em;
+        font-weight: 800;
+        margin-bottom: 0.7em;
+        letter-spacing: -1px;
+        color: #fff;
+    }
+    .migration-card .body {
+        font-size: 1.13em;
+        font-weight: 400;
+        color: #e0e7ff;
+        margin-bottom: 2.1em;
+        line-height: 1.6;
+    }
+    .migration-card .cta-btn {
+        display: inline-block;
+        background: linear-gradient(90deg, #6366f1 0%, #a21caf 100%);
+        color: #fff;
+        font-size: 1.18em;
+        font-weight: 700;
+        border: none;
+        border-radius: 999px;
+        padding: 0.9em 2.7em;
+        margin-top: 0.7em;
+        margin-bottom: 0.2em;
+        box-shadow: 0 0 24px 4px #a21caf55, 0 2px 8px 0 #4f46e555;
+        text-decoration: none;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+    }
+    .migration-card .cta-btn:hover {
+        background: linear-gradient(90deg, #a21caf 0%, #6366f1 100%);
+        color: #fff;
+        transform: scale(1.04);
+        box-shadow: 0 0 36px 8px #a21caf99, 0 2px 12px 0 #4f46e599;
+    }
+    @media (max-width: 600px) {
+        .migration-card { padding: 1.2em 0.5em 1.2em 0.5em; }
+        .migration-card h1 { font-size: 1.1em; }
+        .migration-card .body { font-size: 1em; }
+        .migration-card .cta-btn { font-size: 1em; padding: 0.7em 1.2em; }
+    }
+    </style>
+    <div class="migration-card">
+        <h1>Haliç Exam Genius <span class="pro-animated">Pro</span> ile Tanışın</h1>
+        <div class="body">
+            Eski dostumuz emekliye ayrıldı. Artık sınav programını çok daha hızlı, mobil uyumlu ve modern bir arayüzle <b>halicexamgenius.app</b> adresinde bulabilirsin.
+        </div>
+        <a class="cta-btn" href="https://halicexamgenius.app" target="_blank">YENİ SİTEYE GİT (halicexamgenius.app)</a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 def create_grade_section(label, idx, language_on, default_grade=0.0, default_weight=0):
@@ -62,7 +155,7 @@ def main():
     Handles grade calculation and exam date display.
     """
     # Application configuration
-    last_update = "24.12.2025 14:10"  # Last update date and time
+    last_update = "18.03.2026 20:10"  # Last update date and time
     st.title("Exam Genius📚")
     language_on = st.toggle("🇺🇸 EN", key="language_toggle", value=False)
 
